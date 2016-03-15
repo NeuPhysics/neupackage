@@ -131,15 +131,67 @@ amp2Freq::usage = "Given [n1,n2,k1,k2,a1,a2], calculate the oscillation amplitud
 amp2FreqPlt::usage = "Given [n1,n2,a1,a2,thetam,range for k1,range for k2], displays the contour plot for the transition amplitude";
 amp2FreqContourPltList::usage = "List contour plots of transition probability amplitude for a pair of integers given [list of range for n1, list of range for n2, k1, k2, amplitude of k1, amplitude of k2, thetam, list of range for k1, list of range for k2]";
 amp2FreqCombinedPlt::usage = "Density plot of amplitude combined for n1Range, n2Range, given input [a1,a2,thetam,k1Range,k2Range,n1Range,n2Range]; Example, amp2FreqCombinedPltTest[a1V,a2V,thetamV,{0.01,1,0.01},{0.01,1,0.01},{-1,1},{-1,1}]";
+hamiltonian0::usage = "";
+plt0n1n2List::usage = "";
+sol0n1n2List::usage = "";
+plt0n1n2::usage = "";
+sol0n1n2::usage = "";
+amp2FreqCombinedPlt2::usage = "";
+width2Freq::usage = "";
+
+
 
 
 Begin["`Private`"]
 
+
+phi1V=0;
+phi2V=0;
+init={psi1[0],psi2[0]}=={1,0};
 imgsize=700;
 
 (*All quantities are normalized. k1,a1,k2,a2 are normalized by omegam. x means omegam times the actually distance *)
 
 bCoef[n1_,n2_,k1_,k2_,a1_,a2_,thetam_]:=-(-I)^(n1+n2) Tan[2thetam]/2 n1 k1 BesselJ[n1,a1/k1 Cos[2thetam]]BesselJ[n2,a2/k2 Cos[2thetam]];
+
+(*Hamiltonian if no summation is counted*)
+hamiltonian0[n1_,n2_,k1_,k2_,a1_,a2_,thetam_]:=(bCoef[n1,n2,k1,k2,a1,a2,thetam]+bCoef[n2,n1,k2,k1,a2,a1,thetam])*Exp[I(n1*phi1V+n2*phi2V)]*Exp[I(n1*k1+n2*k2-1)x];
+
+(*Effective Width on a k2-k1 plane should be*)
+
+width2Freq[n1_,n2_,k1_,a1_,a2_,thetam_]:=2(bCoef[n1,n2,k1,(1-n1*k1)/n2,a1,a2,thetam]+bCoef[n2,n1,(1-n1*k1)/n2,k1,a2,a1,thetam]);
+
+sol0n1n2[n1_,n2_,k1_,k2_,a1_,a2_,thetam_,endpoint_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,hamil},
+n1M=n1;
+n2M=n2;
+k1M=k1;
+k2M=k2;
+a1M=a1;
+a2M=a2;
+thetamM = thetam;
+
+hamil = hamiltonian0[n1M,n2M,k1M,k2M,a1M,a2M,thetamM]
+
+NDSolve[I D[{psi1[x],psi2[x]},x]=={{0,hamil},{Conjugate[hamil],0}}.{psi1[x],psi2[x]}&&init,{psi1,psi2},{x,0,endpoint}]
+]
+
+plt0n1n2[n1_,n2_,k1_,k2_,a1_,a2_,thetam_,endpoint_,legends_,color_]:=Plot[Evaluate[Abs[psi2[x]]^2/.sol0n1n2[n1,n2,k1,k2,a1,a2,thetam,endpoint]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"x","Transition Probability"},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}]]
+
+sol0n1n2List[listInput_,k1_,k2_,a1_,a2_,thetam_,endpoint_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,hamil,NlistM,listInputM},
+k1M=k1;
+k2M=k2;
+a1M=a1;
+a2M=a2;
+thetamM = thetam;
+listInputM = listInput;
+
+hamil = Total@Table[hamiltonian0[NlistM[[1]],NlistM[[2]],k1M,k2M,a1M,a2M,thetamM],{NlistM,listInputM}];
+
+NDSolve[I D[{psi1[x],psi2[x]},x]=={{0,hamil},{Conjugate[hamil],0}}.{psi1[x],psi2[x]}&&init,{psi1,psi2},{x,0,endpoint}]
+]
+
+plt0n1n2List[listInput_,k1_,k2_,a1_,a2_,thetam_,endpoint_,legends_,color_]:=Plot[Evaluate[Abs[psi2[x]]^2/.sol0n1n2List[listInput,k1,k2,a1,a2,thetam,endpoint]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"x","Transition Probability"},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}]]
+
 
 coefDenPlt[k1_,k2_,a1_,a2_,thetam_,range_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,lineRWA,phaseList,coeffList,coeffListRe,coeffListIm,coeffListAbs,list0,list1,list2,list3,list4,n2List1,n1List2,n2List3,n1List4,meshStyle,parList},
 meshStyle=None;
@@ -255,18 +307,17 @@ ContourPlot[amp2Freq[n1M,n2M,k1x,k2x,a1M,a2M,thetamM],{k1x,k1RangeM[[1]],k1Range
 ]
 
 
-amp2FreqContourPltList[n1Range_,n2Range_,k1_,k2_,a1_,a2_,thetam_,k1Range_,k2Range_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,k1RangeM,k2RangeM,n2RangeM,n1RangeM},
+amp2FreqContourPltList[n1n2List_,k1_,k2_,a1_,a2_,thetam_,k1Range_,k2Range_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,k1RangeM,k2RangeM,n1n2ListM},
 k1M=k1;
 k2M=k2;
 a1M=a1;
 a2M=a2;
 thetamM=thetam;
-n1RangeM = n1Range;
-n2RangeM = n2Range;
+n1n2ListM = n1n2List;
 k1RangeM = k1Range;
 k2RangeM = k2Range;
 
-Grid[{Flatten@Table[ContourPlot[amp2Freq[n1x,n2x,k1x,k2x,a1M,a2M,thetamM],{k1x,k1RangeM[[1]],k1RangeM[[2]]},{k2x,k2RangeM[[1]],k2RangeM[[2]]},PlotLabel->"Contour Plot of Transition Amplitude: "<>"(n1,n2)=("<>ToString[n1x]<>","<>ToString[n2x]<>")",PlotRange->{Automatic,Automatic,{0,1}},PlotLegends->Automatic,ImageSize->imgsize,FrameLabel->{"\!\(\*SubscriptBox[\(k\), \(1\)]\)","\!\(\*SubscriptBox[\(k\), \(2\)]\)"}],{n1x,n1RangeM[[1]],n1RangeM[[2]]},{n2x,n2RangeM[[1]],n2RangeM[[2]]}]}]
+Grid[{Flatten@Table[ContourPlot[amp2Freq[n1n2ListTable[[1]],n1n2ListTable[[2]],k1x,k2x,a1M,a2M,thetamM],{k1x,k1RangeM[[1]],k1RangeM[[2]]},{k2x,k2RangeM[[1]],k2RangeM[[2]]},PlotLabel->"Contour Plot of Transition Amplitude: "<>"{n1,n2}="<>ToString[n1n2ListTable],PlotRange->{Automatic,Automatic,{0,1}},PlotLegends->Automatic,ImageSize->imgsize,FrameLabel->{"\!\(\*SubscriptBox[\(k\), \(1\)]\)","\!\(\*SubscriptBox[\(k\), \(2\)]\)"}],{n1n2ListTable,n1n2ListM}]}]
 ]
 
 
@@ -286,6 +337,22 @@ Flatten[Table[pltDataRawM[n1,n2],{n1,n1RangeM[[1]],n1RangeM[[2]]},{n2,n2RangeM[[
 ]/((First@Differences[n1Range]+1)*(First@Differences[n2Range]+1));
 
 ListDensityPlot[pltDataM,ImageSize->imgsize,Mesh->All,ColorFunction->"AvocadoColors",InterpolationOrder->0,PlotLegends->Automatic,PlotRange->{Automatic,Automatic,{0,1}},FrameLabel->{"\!\(\*SubscriptBox[\(k\), \(1\)]\)","\!\(\*SubscriptBox[\(k\), \(2\)]\)"},PlotLabel->"Combined Density Plot of Transition Amplitudes;"<>"n1 range:"<>ToString[n1RangeM]<>"; n2 range:"<>ToString[n2RangeM]]
+]
+
+amp2FreqCombinedPlt2[a1_,a2_,thetam_,k1Range_,k2Range_,n1n2List_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,rangeM,pltDataRawM,pltDataM,k1RangeM,k2RangeM,n1n2ListM},
+a1M=a1;
+a2M=a2;
+thetamM=thetam;
+k1RangeM=k1Range;
+k2RangeM=k2Range;
+n1n2ListM=n1n2List;
+
+pltDataRawM[n1_,n2_]:=Flatten[Table[{k1x,k2x,amp2Freq[n1,n2,k1x,k2x,a1M,a2M,thetamM]},{k1x,k1RangeM[[1]],k1RangeM[[2]],k1RangeM[[3]]},{k2x,k2RangeM[[1]],k2RangeM[[2]],k2RangeM[[3]]}],1];
+pltDataM=Total[
+Table[pltDataRawM[n1n2ListTable[[1]],n1n2ListTable[[2]]],{n1n2ListTable,n1n2ListM}]
+]/(Length[n1n2ListM]);
+
+ListDensityPlot[pltDataM,ImageSize->imgsize,Mesh->All,ColorFunction->"AvocadoColors",InterpolationOrder->0,PlotLegends->Automatic,PlotRange->{Automatic,Automatic,{0,1}},FrameLabel->{"\!\(\*SubscriptBox[\(k\), \(1\)]\)","\!\(\*SubscriptBox[\(k\), \(2\)]\)"},PlotLabel->"Combined Density Plot of Transition Amplitudes;"<>"{n1,n2}="<>ToString[n1n2ListM]]
 ]
 
 
