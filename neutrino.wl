@@ -137,7 +137,9 @@ sol0n1n2List::usage = "";
 plt0n1n2::usage = "";
 sol0n1n2::usage = "";
 amp2FreqCombinedPlt2::usage = "";
-width2Freq::usage = "";
+width2Freq::usage = "Calculate the width for given parameters [n1,n2,k1,k2,a1,a2,thetam], where k1,k2 are the point of interest or the wave vectors of the system";
+distanceFun::usage = "";
+qDis2Width::usage = "";
 
 
 
@@ -152,14 +154,57 @@ imgsize=700;
 
 (*All quantities are normalized. k1,a1,k2,a2 are normalized by omegam. x means omegam times the actually distance *)
 
-bCoef[n1_,n2_,k1_,k2_,a1_,a2_,thetam_]:=-(-I)^(n1+n2) Tan[2thetam]/2 n1 k1 BesselJ[n1,a1/k1 Cos[2thetam]]BesselJ[n2,a2/k2 Cos[2thetam]];
+bCoef[n1_,n2_,k1_,k2_,a1_,a2_,thetam_]:=Piecewise[{{
+-(-I)^(n1+n2) Tan[2thetam]/2 n1 k1 BesselJ[n1,a1/k1 Cos[2thetam]]BesselJ[n2,a2/k2 Cos[2thetam]],k1!=0&&k2!=0
+},{
+-(-I)^(n1+n2) Tan[2thetam]/2 n1 k1 BesselJ[n1,Infinity]BesselJ[n2,a2/k2 Cos[2thetam]],k1==0||k2!=0
+},{
+-(-I)^(n1+n2) Tan[2thetam]/2 n1 k1 BesselJ[n1,a1/k1 Cos[2thetam]]BesselJ[n2,Infinity],k1!=0||k2==0
+}}];
 
 (*Hamiltonian if no summation is counted*)
 hamiltonian0[n1_,n2_,k1_,k2_,a1_,a2_,thetam_]:=(bCoef[n1,n2,k1,k2,a1,a2,thetam]+bCoef[n2,n1,k2,k1,a2,a1,thetam])*Exp[I(n1*phi1V+n2*phi2V)]*Exp[I(n1*k1+n2*k2-1)x];
 
 (*Effective Width on a k2-k1 plane should be*)
 
-width2Freq[n1_,n2_,k1_,a1_,a2_,thetam_]:=2(bCoef[n1,n2,k1,(1-n1*k1)/n2,a1,a2,thetam]+bCoef[n2,n1,(1-n1*k1)/n2,k1,a2,a1,thetam]);
+width2Freq[n1_,n2_,k1_,k2_,a1_,a2_,thetam_]:= Module[{k1p,k2p,k1p2,k2p2,k1p3,k2p3},
+k1p=ConditionalExpression[(n2^2*k1+n2*k2+n1)/(n1^2+n2^2),n1!=0&&n2!=0]//Quiet;
+k2p=ConditionalExpression[n1*k1p/n2-1/n2,n1!=0&&n2!=0]//Quiet;
+k1p2=ConditionalExpression[k1,n1==0&&n2!=0]//Quiet;
+k2p2=ConditionalExpression[1/n2,n1==0&&n2!=0]//Quiet;
+k1p3=ConditionalExpression[1/n1,n1!=0&&n2==0]//Quiet;
+k2p3=ConditionalExpression[k2,n1!=0&&n2==0]//Quiet;
+
+Piecewise[{{
+Abs[2(bCoef[n1,n2,k1p,k2p,a1,a2,thetam]+bCoef[n2,n1,k2p,k1p,a2,a1,thetam])],n1!=0&&n2!=0
+},{
+Abs[2(bCoef[n1,n2,k1p2,k2p2,a1,a2,thetam]+bCoef[n2,n1,k2p2,k1p2,a2,a1,thetam])],n1==0&&n2!=0
+},{
+Abs[2(bCoef[n1,n2,k1p3,k2p3,a1,a2,thetam]+bCoef[n2,n1,k2p3,k1p3,a2,a1,thetam])],n1!=0&&n2==0
+},{
+0,n1==0&&n2==0
+}}]
+];
+
+
+distanceFun[n1_,n2_,k1Point_,k2Point_]:=Piecewise[{{
+Abs[n1*k1Point+n2*k2Point-1]/Sqrt[n1^2+n2^2],Not[n1==0&&n2==0]
+},{
+Infinity,n1==0&&n2==0
+}}]
+
+
+(*Define Q value which is ratio of distance to width*)
+qDis2Width[n1_,n2_,k1_,k2_,a1_,a2_,thetam_]:=Piecewise[{{
+distanceFun[n1,n2,k1,k2]/width2Freq[n1,n2,k1,k2,a1,a2,thetam],width2Freq[n1,n2,k1,k2,a1,a2,thetam]!=0
+},{
+Infinity,width2Freq[n1,n2,k1,k2,a1,a2,thetam]==0&&distanceFun[n1,n2,k1,k2]!=0
+},{
+0,width2Freq[n1,n2,k1,k2,a1,a2,thetam]==0&&distanceFun[n1,n2,k1,k2]==0
+}}]
+
+
+
 
 sol0n1n2[n1_,n2_,k1_,k2_,a1_,a2_,thetam_,endpoint_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,hamil},
 n1M=n1;
