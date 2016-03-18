@@ -407,6 +407,61 @@ End[]
 (*END 2-Frequency Matter Perturbation Coefficients*)
 
 
+solNN::usage = "numerical solution of the schrodinger equation for N frequency perturbation";
+pltNN::usage = "plot the numerical solution of the schrodinger equation for N frequency perturbation";
+bCoefN::usage = "calculate the b coefficient of the Hamiltonian";
+distanceN::usage = "calculate the EFFECTIVE distance of a given system from a resonance line, NOTE here is NOT the geometrical distance as we have calculated before in 2 frequency case";
+qValue::usage = "calcualte the ratio of the EFFECTIVE distance and Effective Width (bCoefN)";
+qValueOrderdList::usage = "gives ordered list of qValues and also their corresponding integer combinations";
+
+Begin["`Private`"]
+
+
+
+solNN[listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_,endpoint_]:=Module[{listOfWaveNumberM,listOfAmplitudeM,listOfPhaseM,thetamM,endpointM,hamilPart1,hamilPart2,hamil,hamilConj,lengthM},
+
+listOfWaveNumberM=listOfWaveNumber;
+listOfAmplitudeM=listOfAmplitude;
+listOfPhaseM=listOfPhase;
+thetamM=thetam;
+endpointM=endpoint;
+lengthM=Length[listOfWaveNumber];
+
+hamilPart1 = Total@MapThread[#1*Sin[#2*x+#3]&,{listOfAmplitudeM,listOfWaveNumberM,listOfPhaseM}];
+hamilPart2 = Total@MapThread[#1/#2*Cos[#2*x+#3]&,{listOfAmplitudeM,listOfWaveNumberM,listOfPhaseM}];
+
+hamil = Sin[2thetamM]/2 (hamilPart1)Exp[I(-x-Cos[2thetamM](hamilPart2))];
+hamilConj = Sin[2thetamM]/2 (hamilPart1)Exp[-I(-x-Cos[2thetamM](hamilPart2))];
+
+NDSolve[I D[{psi1[x],psi2[x]},x]=={{0,hamil},{hamilConj,0}}.{psi1[x],psi2[x]}&&init,{psi1,psi2},{x,0,endpointM}]
+
+]
+
+pltNN[listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_,endpoint_,color_]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNN[listOfWaveNumber,listOfAmplitude,listOfPhase,thetam,endpoint][[1]]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"x","Transition Probability"},PlotStyle->{Dotted,color},PlotLegends->Placed[Style["Numerical;",color],{Top,Center}]]
+
+
+bCoefN[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=
+-(-I)^(Total[listOfN]) Tan[2thetam]/2 (listOfN.listOfWaveNumber) Apply[Times,MapThread[BesselJ[#1,#3/#2 Cos[2thetam]]&,{listOfN,listOfWaveNumber,listOfAmplitude}]];
+
+distanceN[listOfN_,listOfWaveNumber0_]:=Abs[listOfN.listOfWaveNumber0-1];
+
+qValue[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=distanceN[listOfN,listOfWaveNumber]/Abs[bCoefN[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]];
+
+qValueOrderdList[listOfNRange_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=Module[{maptolist,listOfThreadM},
+
+listOfThreadM=Tuples[Table[Table[ni,{ni,listOfNRange[[n,1]],listOfNRange[[n,2]]}],{n,1,Length@listOfNRange}]];
+
+SortBy[
+Table[{listN,qValue[listN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]},{listN,listOfThreadM}]//Quiet
+,Last]
+
+]
+
+
+
+End[]
+
+
 (*END Stimulated Matter Effect*)
 
 
