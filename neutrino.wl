@@ -235,7 +235,7 @@ hamil = Total@Table[hamiltonian0[NlistM[[1]],NlistM[[2]],k1M,k2M,a1M,a2M,thetamM
 NDSolve[I D[{psi1[x],psi2[x]},x]=={{0,hamil},{Conjugate[hamil],0}}.{psi1[x],psi2[x]}&&init,{psi1,psi2},{x,0,endpoint}]
 ]
 
-plt0n1n2List[listInput_,k1_,k2_,a1_,a2_,thetam_,endpoint_,legends_,color_]:=Plot[Evaluate[Abs[psi2[x]]^2/.sol0n1n2List[listInput,k1,k2,a1,a2,thetam,endpoint]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"x","Transition Probability"},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}]]
+plt0n1n2List[listInput_,k1_,k2_,a1_,a2_,thetam_,endpoint_,legends_,color_]:=Plot[Evaluate[Abs[psi2[x]]^2/.sol0n1n2List[listInput,k1,k2,a1,a2,thetam,endpoint]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"\!\(\*OverscriptBox[\(x\), \(^\)]\)","Transition Probability"},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}]]
 
 
 coefDenPlt[k1_,k2_,a1_,a2_,thetam_,range_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,lineRWA,phaseList,coeffList,coeffListRe,coeffListIm,coeffListAbs,list0,list1,list2,list3,list4,n2List1,n1List2,n2List3,n1List4,meshStyle,parList},
