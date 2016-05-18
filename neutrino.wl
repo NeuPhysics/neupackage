@@ -2,7 +2,14 @@
 
 BeginPackage["neutrino`"]
 
+
 (*Unit Conversion*)
+ThetaMatter[thetav_,lambda_,omegav_:1]:=ArcTan[Sin[2thetav]/(Cos[2thetav]-lambda/omegav)]/2;
+OmegaMatter[thetam_,thetav_,omegav_:1]:=omegav*Sqrt[Sin[thetav]^2+(Sin[2thetav]/Tan[2thetam])^2];
+OmegaMatter2[lambda_,thetav_,omegav_:1]:=omegav*Sqrt[(lambda/omegav-Cos[2thetav])^2+Sin[2thetav]^2];
+OmegaVacuum[energy_,deltam2_]:=deltam2/(2energy);(*input should be using the same units*)
+MeVInverse2km[mev_]:=1.97*10^(-13)*(mev);(*  mev/1MeV=mev*(1/1MeV)=mev*(197fm)=...   *)
+(*Unit Conversion END*)
 
 
 (*Rotation Matrices*)
@@ -133,9 +140,9 @@ amp2FreqContourPltList::usage = "List contour plots of transition probability am
 amp2FreqCombinedPlt::usage = "Density plot of amplitude combined for n1Range, n2Range, given input [a1,a2,thetam,k1Range,k2Range,n1Range,n2Range]; Example, amp2FreqCombinedPltTest[a1V,a2V,thetamV,{0.01,1,0.01},{0.01,1,0.01},{-1,1},{-1,1}]";
 hamiltonian0::usage = "";
 plt0n1n2List::usage = "";
-sol0n1n2List::usage = "";
+plt0n1n2ListTicks::usage = "";
 plt0n1n2::usage = "";
-sol0n1n2::usage = "";
+sol0n1n2List::usage = "";
 amp2FreqCombinedPlt2::usage = "";
 width2Freq::usage = "Calculate the width for given parameters [n1,n2,k1,k2,a1,a2,thetam], where k1,k2 are the point of interest or the wave vectors of the system";
 distanceFun::usage = "";
@@ -236,6 +243,7 @@ NDSolve[I D[{psi1[x],psi2[x]},x]=={{0,hamil},{Conjugate[hamil],0}}.{psi1[x],psi2
 ]
 
 plt0n1n2List[listInput_,k1_,k2_,a1_,a2_,thetam_,endpoint_,legends_,color_]:=Plot[Evaluate[Abs[psi2[x]]^2/.sol0n1n2List[listInput,k1,k2,a1,a2,thetam,endpoint]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"\!\(\*OverscriptBox[\(x\), \(^\)]\)","Transition Probability"},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}]]
+plt0n1n2ListTicks[listInput_,k1_,k2_,a1_,a2_,thetam_,endpoint_,legends_,color_,frameticksplot_]:=Plot[Evaluate[Abs[psi2[x]]^2/.sol0n1n2List[listInput,k1,k2,a1,a2,thetam,endpoint]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"\!\(\*OverscriptBox[\(x\), \(^\)]\)","Transition Probability"},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}],FrameTicks->{{Automatic,None},{Automatic,frameticksplot}}]
 
 
 coefDenPlt[k1_,k2_,a1_,a2_,thetam_,range_]:=Module[{n1M,n2M,k1M,k2M,a1M,a2M,thetamM,lineRWA,phaseList,coeffList,coeffListRe,coeffListIm,coeffListAbs,list0,list1,list2,list3,list4,n2List1,n1List2,n2List3,n1List4,meshStyle,parList},
@@ -405,64 +413,6 @@ End[]
 
 
 (*END 2-Frequency Matter Perturbation Coefficients*)
-
-
-solNN::usage = "numerical solution of the schrodinger equation for N frequency perturbation";
-pltNN::usage = "plot the numerical solution of the schrodinger equation for N frequency perturbation";
-bCoefN::usage = "calculate the b coefficient of the Hamiltonian";
-distanceN::usage = "calculate the EFFECTIVE distance of a given system from a resonance line, NOTE here is NOT the geometrical distance as we have calculated before in 2 frequency case";
-qValue::usage = "calcualte the ratio of the EFFECTIVE distance and Effective Width (bCoefN)";
-qValueOrderdList::usage = "gives ordered list of qValues and also their corresponding integer combinations";
-
-Begin["`Private`"]
-
-
-
-solNN[listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_,endpoint_]:=Module[{listOfWaveNumberM,listOfAmplitudeM,listOfPhaseM,thetamM,endpointM,hamilPart1,hamilPart2,hamil,hamilConj,lengthM},
-
-listOfWaveNumberM=listOfWaveNumber;
-listOfAmplitudeM=listOfAmplitude;
-listOfPhaseM=listOfPhase;
-thetamM=thetam;
-endpointM=endpoint;
-lengthM=Length[listOfWaveNumber];
-
-hamilPart1 = Total@MapThread[#1*Sin[#2*x+#3]&,{listOfAmplitudeM,listOfWaveNumberM,listOfPhaseM}];
-hamilPart2 = Total@MapThread[#1/#2*Cos[#2*x+#3]&,{listOfAmplitudeM,listOfWaveNumberM,listOfPhaseM}];
-
-hamil = Sin[2thetamM]/2 (hamilPart1)Exp[I(-x-Cos[2thetamM](hamilPart2))];
-hamilConj = Sin[2thetamM]/2 (hamilPart1)Exp[-I(-x-Cos[2thetamM](hamilPart2))];
-
-NDSolve[I D[{psi1[x],psi2[x]},x]=={{0,hamil},{hamilConj,0}}.{psi1[x],psi2[x]}&&init,{psi1,psi2},{x,0,endpointM}]
-
-]
-
-pltNN[listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_,endpoint_,color_]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNN[listOfWaveNumber,listOfAmplitude,listOfPhase,thetam,endpoint][[1]]],{x,0,endpoint},ImageSize->imgsize,Frame->True,FrameLabel->{"x","Transition Probability"},PlotStyle->{Dotted,color},PlotLegends->Placed[Style["Numerical;",color],{Top,Center}]]
-
-
-bCoefN[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=
--(-I)^(Total[listOfN]) Tan[2thetam]/2 (listOfN.listOfWaveNumber) Apply[Times,MapThread[BesselJ[#1,#3/#2 Cos[2thetam]]&,{listOfN,listOfWaveNumber,listOfAmplitude}]];
-
-distanceN[listOfN_,listOfWaveNumber0_]:=Abs[listOfN.listOfWaveNumber0-1];
-
-qValue[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=distanceN[listOfN,listOfWaveNumber]/Abs[bCoefN[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]];
-
-qValueOrderdList[listOfNRange_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=Module[{maptolist,listOfThreadM},
-
-listOfThreadM=Tuples[Table[Table[ni,{ni,listOfNRange[[n,1]],listOfNRange[[n,2]]}],{n,1,Length@listOfNRange}]];
-
-SortBy[
-Table[{listN,qValue[listN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]},{listN,listOfThreadM}]//Quiet
-,Last]
-
-]
-
-
-
-End[]
-
-
-(*END Stimulated Matter Effect*)
 
 
 EndPackage[]
