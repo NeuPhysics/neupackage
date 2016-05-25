@@ -4,11 +4,19 @@ BeginPackage["neutrino`"]
 
 
 (*Unit Conversion*)
+OmegaMatter2::usage = "Feed in [lambda_,thetav_,omegav_:1], where lambda should have the same unit as omegav by defaul";
+OmegaVacuum::usage = "Takes [energy_,deltam2_] as parameters and calculates \!\(\*SubscriptBox[\(\[Omega]\), \(v\)]\). Should becareful about units.";
+MeVInverse2km::usage = "Given the value in unit of \!\(\*SuperscriptBox[\(MeV\), \(-1\)]\), calculate the corresponding value in unit of km";
+km2MeVInverse::usage = "Given value in unit of km, calcualte the corresponding value in unit of 1/MeV";
+
+Begin["`Private`"]
 ThetaMatter[thetav_,lambda_,omegav_:1]:=ArcTan[Sin[2thetav]/(Cos[2thetav]-lambda/omegav)]/2;
 OmegaMatter[thetam_,thetav_,omegav_:1]:=omegav*Sqrt[Sin[thetav]^2+(Sin[2thetav]/Tan[2thetam])^2];
 OmegaMatter2[lambda_,thetav_,omegav_:1]:=omegav*Sqrt[(lambda/omegav-Cos[2thetav])^2+Sin[2thetav]^2];
 OmegaVacuum[energy_,deltam2_]:=deltam2/(2energy);(*input should be using the same units*)
-MeVInverse2km[mev_]:=1.97*10^(-13)*(mev);(*  mev/1MeV=mev*(1/1MeV)=mev*(197fm)=...   *)
+MeVInverse2km[mevinverse_]:=1.97*10^(-16)*(mevinverse);(*  mev/1MeV=mev*(1/1MeV)=mev*(197fm)=...   *)
+km2MeVInverse[km_]:=km/(1.97*10^(-16));(*  mev/1MeV=mev*(1/1MeV)=mev*(197fm)=...   *)
+End[]
 (*Unit Conversion END*)
 
 

@@ -9,10 +9,10 @@ imgsizeNeuMat=800;
 solNN::usage = "numerical solution of the schrodinger equation for N frequency perturbation";
 pltNN::usage = "plot the numerical solution of the schrodinger equation for N frequency perturbation";
 solNum::usage = "Numerical Solution to systems with any number of perturbations. \!\(\*SubscriptBox[\(\[Sum]\), \(n\)]\)\!\(\*SubscriptBox[\(A\), \(n\)]\)Sin[\!\(\*SubscriptBox[\(k\), \(n\)]\)x+\!\(\*SubscriptBox[\(\[Phi]\), \(n\)]\)], the parameters for solNum[kNList,aNList,phiNList,thetam,endpoint]";
-pltNum::usage = "plot results from solNum";
-hNList::usage = "";
-solNList::usage = "";
-pltNList::usage = "";
+pltNum::usage = "plot results from solNum; Parameters are given in the order pltNum[kNList,aNList,phiNList,thetam,endpoint,pltLabel,color,frameTicks,frameLabel,startpoint], where startpoint is optional and by defaul it's set to 0.";
+hNList::usage = "given a list of n's, generate the Hamiltonian";
+solNList::usage = "solution of a system composed of a given list of n's";
+pltNList::usage = "plot the result of solNList";
 
 Begin["`Private`"]
 
@@ -133,8 +133,8 @@ End[]
 (*BEGIN Calculate Q values*)
 listNGenerator::usage = "generate a list of numbers; Example, listNGeneratorTest2[6,3] gives us {{-3,3},{-3,3},{-3,3},{-3,3},{-3,3},{-3,3}}";
 listNGeneratorFormat2::usage = "generate a complete list given the upper limits; As an example listNGeneratorFormat2[{3,3,3}] gives us{{-3,-2,-1,0,1,2,3},{-3,-2,-1,0,1,2,3},{-3,-2,-1,0,1,2,3}}";
-bNList::usage = "Calculate the b coefficient of the Hamiltonian; Example, bNList[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]";
-widthNList::usage = "Calculate the width; Example, widthNList[list of n's,list of k's,list of a's,list of \[Phi]'s,thetam] and here lists are in the form {0.999,0.6,0.4}";
+bNList::usage = "Calculate the b coefficient of the Hamiltonian; Example, bNList[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]. Output is in unit of \!\(\*SubscriptBox[\(\[Omega]\), \(m\)]\)";
+widthNList::usage = "Calculate the width; Example, widthNList[list of n's,list of k's,list of a's,list of \[Phi]'s,thetam] and here lists are in the form {0.999,0.6,0.4}. Output is in unit of \!\(\*SubscriptBox[\(\[Omega]\), \(m\)]\) .";
 distanceNList::usage = "calculate the EFFECTIVE distance of a given system from a resonance line, NOTE here is NOT the geometrical distance as we have calculated before in 2 frequency case";
 qValue::usage = "calcualte the ratio of the EFFECTIVE distance and Effective Width (bCoefN)";
 qValueOrderdList::usage = "gives ordered list of qValues and also their corresponding integer combinations; Example, qValueOrderdList[listNGenerator[6,3],kNListTest,aNListTest,phiNListTest,thetamTest]";
@@ -167,7 +167,7 @@ distanceNList[listOfN_,listOfWaveNumber0_]:=Abs[listOfN.listOfWaveNumber0-1];
 
 widthNList[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=Abs[bNList[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]];
 
-qValue[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=distanceNList[listOfN,listOfWaveNumber]/Abs[bNList[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]];
+qValue[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:= distanceNList[listOfN,listOfWaveNumber]/Abs[bNList[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]];
 
 qValueOrderdList[listOfNRange_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=Module[{maptolist,listOfThreadM},
 
