@@ -18,7 +18,7 @@ def pauli_matrices(n):
     * pauli_matrices(n)  is $\sigma_n$;
     * n runs from 0 to 3, where pauli_matrices(0) is identity matrix."""
     
-    if
+    #if
     
     matrices = np.array([[ [[1,0], [0,1] ], [0,1],[1,0]], [[0,-1j],[1j,0]], [[1,0],[0,-1]] ])
     

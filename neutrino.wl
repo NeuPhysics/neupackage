@@ -8,6 +8,8 @@ OmegaMatter2::usage = "Feed in [lambda_,thetav_,omegav_:1], where lambda should 
 OmegaVacuum::usage = "Takes [energy_,deltam2_] as parameters and calculates \!\(\*SubscriptBox[\(\[Omega]\), \(v\)]\). Should becareful about units.";
 MeVInverse2km::usage = "Given the value in unit of \!\(\*SuperscriptBox[\(MeV\), \(-1\)]\), calculate the corresponding value in unit of km";
 km2MeVInverse::usage = "Given value in unit of km, calcualte the corresponding value in unit of 1/MeV";
+OmegaMatter::usage = "Given [thetam_,thetav_,omegav_:1] calculate omegam";
+ThetaMatter::usage = "Calculate thetam given [thetav_,lambda_,omegav_:1]";
 
 Begin["`Private`"]
 ThetaMatter[thetav_,lambda_,omegav_:1]:=ArcTan[Sin[2thetav]/(Cos[2thetav]-lambda/omegav)]/2;
