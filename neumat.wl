@@ -13,6 +13,7 @@ pltNum::usage = "plot results from solNum; Parameters are given in the order plt
 hNList::usage = "given a list of n's, generate the Hamiltonian";
 solNList::usage = "solution of a system composed of a given list of n's";
 pltNList::usage = "plot the result of solNList";
+hamiltonianNum::usage = "";
 
 Begin["`Private`"]
 
@@ -85,6 +86,28 @@ NDSolve[I D[{psi1[x],psi2[x]},x]==hamilM.{psi1[x],psi2[x]}&&initM,{psi1,psi2},{x
 
 pltNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,legends_,color_,frameTicks_,frameLabel_,startpoint_:0]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNList[listInput,kNList,aNList,phiNList,thetam,endpoint]],{x,startpoint,endpoint},ImageSize->imgsizeNeuMat,Frame->True,FrameLabel->{{"Transition Probability",None},{"x",frameLabel}},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}],FrameTicks->{{Automatic,None},{Automatic,frameTicks}},PlotPoints->endpoint]
 
+
+(*hamiltonianNum BEGIN*)
+hamiltonianNum[kNList_,aNList_,phiNList_,thetam_,xvalue_]:=Module[
+{listInputM,aNListM,kNListM,phiNListM,thetamM,length,endpointM,hamilM,hamil12M,hamil21M,initM,maxstepsValueM},
+
+thetamM=thetam;
+aNListM=aNList;
+kNListM=kNList;
+phiNListM=phiNList;
+length=Length@listInputM;
+99
+hamil12M[x_]:=Sin[2thetamM]/2 (Total@Table[aNListM[[i]]Sin[kNListM[[i]]x+phiNListM[[i]]],{i,1,Length@kNListM}])Exp[I(-x-Cos[2thetam]( 
+Total@Table[aNListM[[i]]/kNListM[[i]] Cos[kNListM[[i]]x+phiNListM[[i]]],{i,1,Length@kNListM}]
+ ))];
+hamil21M[x_]:=Sin[2thetamM]/2 (Total@Table[aNListM[[i]]Sin[kNListM[[i]]x+phiNListM[[i]]],{i,1,Length@kNListM}])Exp[-I(-x-Cos[2thetam]( 
+Total@Table[aNListM[[i]]/kNListM[[i]] Cos[kNListM[[i]]x+phiNListM[[i]]],{i,1,Length@kNListM}]
+ ))];
+
+{{0,hamil12M[xvalue]},{hamil21M[xvalue],0}}
+
+]
+(*hamiltonianNum END*)
 
 (*solNum BEGIN*)
 solNum[kNList_,aNList_,phiNList_,thetam_,endpoint_]:=Module[
