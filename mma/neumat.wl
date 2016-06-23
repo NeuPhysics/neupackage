@@ -64,8 +64,8 @@ PhiNM=Exp[I nNListM.phiNListM];
 (*hamil END*)
 
 (*solNList BEGIN*)
-solNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_]:=Module[
-{listInputM,aNListM,kNListM,phiNListM,thetamM,length,endpointM,hamilM,initM},
+solNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,workingprecision_:$MachinePrecision,accuracygoal_:0.5$MachinePrecision]:=Module[
+{listInputM,aNListM,kNListM,phiNListM,thetamM,length,endpointM,hamilM,initM,maxstepsM},
 
 thetamM=thetam;
 listInputM=listInput;
@@ -75,11 +75,12 @@ phiNListM=phiNList;
 length=Length@listInputM;
 endpointM=endpoint;
 initM={psi1[0],psi2[0]}=={1,0};
+maxstepsM=10000000;
 
 
 hamilM=Total@Table[hNList[listInputM[[i]],kNListM,aNListM,phiNListM,thetamM,x],{i,1,length}];
 
-NDSolve[I D[{psi1[x],psi2[x]},x]==hamilM.{psi1[x],psi2[x]}&&initM,{psi1,psi2},{x,0,endpointM}]
+NDSolve[I D[{psi1[x],psi2[x]},x]==hamilM.{psi1[x],psi2[x]}&&initM,{psi1,psi2},{x,0,endpointM},AccuracyGoal->accuracygoal,WorkingPrecision->workingprecision,MaxSteps->maxstepsM]
 
 ]
 (*solNList END*)
