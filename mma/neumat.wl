@@ -12,7 +12,7 @@ solNum::usage = "Numerical Solution to systems with any number of perturbations.
 pltNum::usage = "plot results from solNum; Parameters are given in the order pltNum[kNList,aNList,phiNList,thetam,endpoint,pltLabel,color,frameTicks,frameLabel,startpoint], where startpoint is optional and by defaul it's set to 0.";
 hNList::usage = "given a list of n's, generate the Hamiltonian";
 solNList::usage = "solution of a system composed of a given list of n's";
-pltNList::usage = "plot the result of solNList";
+pltNList::usage = "plot the result of solNList; Parameters taken are [listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,legends_,color_,frameTicks_,frameLabel_,startpoint_:0]";
 hamiltonianNum::usage = "";
 
 Begin["`Private`"]
@@ -64,7 +64,7 @@ PhiNM=Exp[I nNListM.phiNListM];
 (*hamil END*)
 
 (*solNList BEGIN*)
-solNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,workingprecision_:$MachinePrecision,accuracygoal_:0.5$MachinePrecision]:=Module[
+solNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_(*,workingprecision_:$MachinePrecision,accuracygoal_:0.5$MachinePrecision*)]:=Module[
 {listInputM,aNListM,kNListM,phiNListM,thetamM,length,endpointM,hamilM,initM,maxstepsM},
 
 thetamM=thetam;
@@ -80,12 +80,12 @@ maxstepsM=10000000;
 
 hamilM=Total@Table[hNList[listInputM[[i]],kNListM,aNListM,phiNListM,thetamM,x],{i,1,length}];
 
-NDSolve[I D[{psi1[x],psi2[x]},x]==hamilM.{psi1[x],psi2[x]}&&initM,{psi1,psi2},{x,0,endpointM},AccuracyGoal->accuracygoal,WorkingPrecision->workingprecision,MaxSteps->maxstepsM]
+NDSolve[I D[{psi1[x],psi2[x]},x]==hamilM.{psi1[x],psi2[x]}&&initM,{psi1,psi2},{x,0,endpointM}(*,AccuracyGoal->accuracygoal,WorkingPrecision->workingprecision*),MaxSteps->maxstepsM]
 
 ]
 (*solNList END*)
 
-pltNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,legends_,color_,frameTicks_,frameLabel_,startpoint_:0]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNList[listInput,kNList,aNList,phiNList,thetam,endpoint]],{x,startpoint,endpoint},ImageSize->imgsizeNeuMat,Frame->True,FrameLabel->{{"Transition Probability",None},{"x",frameLabel}},PlotStyle->color,PlotLegends->Placed[Style[ToString[legends],color],{Top,Center}],FrameTicks->{{Automatic,None},{Automatic,frameTicks}},PlotPoints->endpoint]
+pltNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,legends_,color_,frameTicks_,frameLabel_,startpoint_:0]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNList[listInput,kNList,aNList,phiNList,thetam,endpoint]],{x,startpoint,endpoint},ImageSize->imgsizeNeuMat,Frame->True,FrameLabel->{{"Transition Probability",None},{"\!\(\*OverscriptBox[\(x\), \(^\)]\)",frameLabel}},PlotStyle->color,PlotLegends->Placed[LineLegend[color,ToString[legends]],{Center,Above}],FrameTicks->{{Automatic,None},{Automatic,frameTicks}},PlotPoints->endpoint,LabelStyle->Black,FrameTicksStyle->Larger,BaseStyle->{(*FontWeight\[Rule]"Bold",*)FontFamily->"Arial",FontSize->15}]
 
 
 (*hamiltonianNum BEGIN*)
