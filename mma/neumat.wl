@@ -11,7 +11,7 @@ pltNN::usage = "plot the numerical solution of the schrodinger equation for N fr
 solNum::usage = "Numerical Solution to systems with any number of perturbations. \!\(\*SubscriptBox[\(\[Sum]\), \(n\)]\)\!\(\*SubscriptBox[\(A\), \(n\)]\)Sin[\!\(\*SubscriptBox[\(k\), \(n\)]\)x+\!\(\*SubscriptBox[\(\[Phi]\), \(n\)]\)], the parameters for solNum[kNList,aNList,phiNList,thetam,endpoint]";
 pltNum::usage = "plot results from solNum; Parameters are given in the order pltNum[kNList,aNList,phiNList,thetam,endpoint,pltLabel,color,frameTicks,frameLabel,startpoint], where startpoint is optional and by defaul it's set to 0.";
 hNList::usage = "given a list of n's, generate the Hamiltonian";
-solNList::usage = "solution of a system composed of a given list of n's";
+solNList::usage = "solution of a system composed of a given list of n's; Parameters taken are [listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_(*,workingprecision_:$MachinePrecision,accuracygoal_:0.5$MachinePrecision*)]";
 pltNList::usage = "plot the result of solNList; Parameters taken are [listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,legends_,color_,frameTicks_,frameLabel_,startpoint_:0]";
 hamiltonianNum::usage = "";
 
@@ -137,7 +137,7 @@ NDSolve[I D[{psi1[x],psi2[x]},x]=={{0,hamil12M},{hamil21M,0}}.{psi1[x],psi2[x]}&
 
 (*pltNum BEGIN*)
 (*A NOTE HERE: adjust PlotPoints in case the plot shows weird behavior*)
-pltNum[kNList_,aNList_,phiNList_,thetam_,endpoint_,pltLabel_,color_,frameTicks_,frameLabel_,startpoint_:0]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNum[kNList,aNList,phiNList,thetam,endpoint][[1]]],{x,startpoint,endpoint},ImageSize->imgsizeNeuMat,Frame->True,FrameLabel->{{"Transition Probability",None},{"x",frameLabel}},PlotStyle->color,PlotLegends->Placed[Style[pltLabel,color],{Top,Center}],FrameTicks->{{Automatic,None},{Automatic,frameTicks}},LabelStyle->Black,FrameTicksStyle->Larger,BaseStyle->{(*FontWeight\[Rule]"Bold",*)FontFamily->"Arial",FontSize->18},ImagePadding->{{Automatic,Automatic},{Automatic,60}}(*,PlotPoints\[Rule]endpoint-startpoint*)]
+pltNum[kNList_,aNList_,phiNList_,thetam_,endpoint_,pltLabel_,color_,frameTicks_,frameLabel_,startpoint_:0]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNum[kNList,aNList,phiNList,thetam,endpoint][[1]]],{x,startpoint,endpoint},ImageSize->imgsizeNeuMat,Frame->True,FrameLabel->{{"Transition Probability",None},{"x",frameLabel}},PlotStyle->color,PlotLegends->Placed[pltLabel,{Top,Center}],FrameTicks->{{Automatic,None},{Automatic,frameTicks}},LabelStyle->Black,FrameTicksStyle->Larger,BaseStyle->{(*FontWeight\[Rule]"Bold",*)FontFamily->"Arial",FontSize->18},ImagePadding->{{Automatic,Automatic},{Automatic,60}}(*,PlotPoints\[Rule]endpoint-startpoint*)]
 (*pltNum END*)
 
 (*END A second method to solve the system numerically*)
