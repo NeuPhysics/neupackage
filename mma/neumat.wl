@@ -185,7 +185,7 @@ Table[i,{i,-nRangeList[[j]],nRangeList[[j]]}],
 
 
 bNList[listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]:=
--(-I)^(Total[listOfN]) Tan[2thetam]/2 (listOfN.listOfWaveNumber) Apply[Times,MapThread[BesselJ[#1,#3/#2 Cos[2thetam]]&,{listOfN,listOfWaveNumber,listOfAmplitude}]];
+-(-I)^(Total[listOfN]) Tan[2thetam](listOfN.listOfWaveNumber) Apply[Times,MapThread[BesselJ[#1,#3/#2 Cos[2thetam]]&,{listOfN,listOfWaveNumber,listOfAmplitude}]];
 
 distanceNList[listOfN_,listOfWaveNumber0_]:=Abs[listOfN.listOfWaveNumber0-1];
 
