@@ -160,8 +160,8 @@ listNGeneratorFormat2::usage = "generate a complete list given the upper limits;
 bNList::usage = "Calculate the b coefficient of the Hamiltonian; Example, bNList[listOfN,listOfWaveNumber,listOfAmplitude,listOfPhase,thetam]. Output is in unit of \!\(\*SubscriptBox[\(\[Omega]\), \(m\)]\)";
 widthNList::usage = "Calculate the width; Example, widthNList[list of n's,list of k's,list of a's,list of \[Phi]'s,thetam] and here lists are in the form {0.999,0.6,0.4}. Output is in unit of \!\(\*SubscriptBox[\(\[Omega]\), \(m\)]\) .";
 distanceNList::usage = "calculate the EFFECTIVE distance of a given system from a resonance line, NOTE here is NOT the geometrical distance as we have calculated before in 2 frequency case";
-qValue::usage = "calcualte the ratio of the EFFECTIVE distance and Effective Width (bCoefN)";
-qValueOrderdList::usage = "gives ordered list of qValues and also their corresponding integer combinations; Example, qValueOrderdList[listNGenerator[6,3],kNListTest,aNListTest,phiNListTest,thetamTest]";
+qValue::usage = "calcualte the ratio of the EFFECTIVE distance and Effective Width (bCoefN); Taks parameters [listOfN_,listOfWaveNumber_,listOfAmplitude_,listOfPhase_,thetam_]";
+qValueOrderdList::usage = "gives ordered list of qValues and also their corresponding integer combinations; Example, qValueOrderdList[listNGenerator[6,3],kNListTest,aNListTest,phiNListTest,thetamTest]; Please Notice that the first argument takes a list of the range of each n, not the specified n.";
 
 Begin["`Private`"]
 
