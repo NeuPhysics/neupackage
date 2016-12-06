@@ -9,8 +9,8 @@ BeginPackage["linearstability`"]
 FourBeamDeltas::usage = "List of deltas which are the perturbations of density matrix for four beams model. Take one paramter [z_]";
 FourBeamDensityMatrix::usage = "Generate perturbed density matrix for four beams model";
 FourBeamTransMatrix::usage = "The matrix M in equation i d delta/dz = M. delta for four beam model. Takes paprameters [eta_,mk_,mu_,alpha_,theta1_,theta2_,lambda_,omegav_:0]; theta1 for neutrinos, theta2 for antineutrinos; eta = 1 for NH and -1 for IH; mu =\!\(\*SqrtBox[\(2\)]\)\!\(\*SubscriptBox[\(G\), \(F\)]\)\!\(\*SubscriptBox[\(n\), \(\[Nu]\)]\) where \!\(\*SubscriptBox[\(n\), \(\[Nu]\)]\) is for the beam";
-FourBeamRotationMatrixSameAngle::usage = "A matrix that rotates the list of deltas {deltaL[z],deltaLB[z],deltaR[z],deltaRB[z]} into the symmetric and anti-symmetric modes for the case that theta1 = theta2";
-FourBeamRotationMatrixDiffAngle::usage = "A matrix that rotates the list of deltas {deltaL[z],deltaLB[z],deltaR[z],deltaRB[z]} into the symmetric and anti-symmetric modes for the case that theta1 != theta2 and lambda=0";
+FourBeamRotationMatrixSameAngle::usage = "A matrix that rotates the list of deltas {deltaL[z],deltaLB[z],deltaR[z],deltaRB[z]} into the symmetric and anti-symmetric modes {D+,S+,D-,S-} for the case that theta1 = theta2";
+FourBeamRotationMatrixDiffAngle::usage = "A matrix that rotates the list of deltas {deltaL[z],deltaLB[z],deltaR[z],deltaRB[z]} into the symmetric and anti-symmetric modes {\[Delta]+,\!\(\*OverscriptBox[\(\[Delta]\), \(-\)]\)+,\[Delta]-,\!\(\*OverscriptBox[\(\[Delta]\), \(-\)]\)-} for the case that theta1 != theta2 and lambda=0";
 
 Begin["`Private`"]
 
