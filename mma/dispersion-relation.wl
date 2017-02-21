@@ -56,7 +56,7 @@ Outer[Times,
 Eigenvalues@nMatFunNBeams[gList,nM,thetaList],{nM,1}],
 {nM,First@numrange,Last@numrange,numstep}];
 
-pltDataM=eigenDataM;
+pltDataM=eigenDataM//Transpose;
 
 ListPlot[pltDataM,Joined->False,Frame->True,ImageSize->Large,PlotRange->pltRange,FrameLabel->{"k","omega"}]
 
