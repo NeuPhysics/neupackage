@@ -10,6 +10,12 @@ v[theta_,phi_]:={1,Cos[phi]Sin[theta],Sin[phi]Sin[theta],Cos[theta]};
 
 vvMatrix[theta_,phi_]=Outer[Times,v[theta,phi],v[theta,phi]];
 
+vSH[theta_,phi_]:=Sqrt[Pi]{2SH[0,0,theta,phi],Sqrt[2/3](SH[1,-1,theta,phi]-SH[1,1,theta,phi]),I Sqrt[2/3](SH[1,-1,theta,phi]+SH[1,1,theta,phi]),2Sqrt[1/3]SH[1,0,theta,phi]};
+
+vvSHMatrix[theta_,phi_]=Outer[Times,vSH[theta,phi],vSH[theta,phi]];
+
+
+
 
 (* BEGIN for discrete beams + Axial Symmetric (\[Phi] is integrated over 0 to 2\[Pi]) *)
 
@@ -63,5 +69,98 @@ ListPlot[pltDataM,Joined->False,Frame->True,ImageSize->Large,PlotRange->pltRange
 ];
 
 (* END for discrete beams *)
+
+
+
+(* BEGIN Two Beams Hyperbola *)
+
+
+(*** Usage BEGIN  ***)
+TwoBeamsAxialSymHyperEqn::usage = "Given the parameters, calculates the ; TwoBeamsAxialSymHyperEqn[omega_,k_,theta1_,theta2_,g1_,g2_]";
+TwoBeamsAxialSymHyperFun::usage = "Calculates the function of omega(k); TwoBeamsAxialSymHyperFun[k_,theta1_,theta2_,g1_,g2_]";
+TwoBeamsAxialSymPrincipalAxis::usage = "Calculates the principal axis of the hyperbola; TwoBeamsAxialSymPrincipalAxis[k_,theta1_,theta2_,g1_,g2_]";
+TwoBeamsAxialSymAsymptotic::usage = "TwoBeamsAxialSymAsymptotic[k_,theta1_,theta2_,g1_,g2_]"
+(*** Usage END  ***)
+
+TwoBeamsAxialSymHyperEqn[omega_,k_,theta1_,theta2_,g1_,g2_]:=4(omega-k Cos[theta1])(omega-k Cos[theta2])==g1(1-Cos[theta1]^2)(omega-k Cos[theta2]) + g2(1-Cos[theta2]^2)(omega-k Cos[theta1])
+
+TwoBeamsAxialSymHyperFun[k_,theta1_,theta2_,g1_,g2_]=omega/.Solve[TwoBeamsAxialSymHyperEqn[omega,k,theta1,theta2,g1,g2],omega];
+
+TwoBeamsAxialSymPrincipalAxis[k_,theta1_,theta2_,g1_,g2_]:=Module[{kcM,omegacM,dM,akomegaM,bkM,bomegaM,aomegaM,akM,slopeM},
+
+akomegaM=-2(Cos@theta1+Cos@theta2);
+akM=4Cos[theta1]Cos[theta2];
+aomegaM=4;
+bkM=(g1(1-Cos[theta1]^2)Cos[theta2]+g2 (1-Cos[theta2]^2)Cos[theta1])/2;
+bomegaM=-(g1(1-Cos[theta1]^2)+g2(1-Cos[theta2]^2))/2;
+
+dM=-4(Cos@theta1-Cos@theta2)^2;
+
+kcM=-(Det[{ {bkM,akomegaM},{bomegaM,aomegaM} }])/dM;
+omegacM=-(Det[{ {akM,bkM},{akomegaM,bomegaM} }])/dM;
+
+slopeM=Tan[(ArcTan[Cos@theta1]+ArcTan[Cos@theta2])/2];
+
+{slopeM(k+kcM)-omegacM, -(1/slopeM)(k+kcM)-omegacM}
+
+];
+
+
+TwoBeamsAxialSymAsymptotic[k_,theta1_,theta2_,g1_,g2_]:=Module[{kcM,omegacM,dM,deltaM,akomegaM,bkM,bomegaM,aomegaM,akM,cM,paAngleM,lambdaM,aobM},
+
+akomegaM=-2(Cos@theta1+Cos@theta2);
+akM=4Cos[theta1]Cos[theta2];
+aomegaM=4;
+bkM=(g1(1-Cos[theta1]^2)Cos[theta2]+g2 (1-Cos[theta2]^2)Cos[theta1])/2;
+bomegaM=-(g1(1-Cos[theta1]^2)+g2(1-Cos[theta2]^2))/2;
+cM=0;
+
+dM=-4(Cos@theta1-Cos@theta2)^2;
+deltaM = Det[{
+{akM,akomegaM,bkM},
+{akomegaM,aomegaM,bomegaM},
+{bkM,bomegaM,cM}
+}];
+lambdaM={2(1+Cos[theta1]Cos[theta2])+ 2 Sqrt[(Cos[theta1]Cos[theta2]+1)^2+(Cos[theta1]-Cos[theta2])^2],2(1+Cos[theta1]Cos[theta2])- 2 Sqrt[(Cos[theta1]Cos[theta2]+1)^2+(Cos[theta1]-Cos[theta2])^2]};
+
+paAngleM=(ArcTan[Cos@theta1]+ArcTan[Cos@theta2])/2;
+aobM=Sqrt[-lambdaM[[2]]/lambdaM[[1]]];
+
+kcM=-(Det[{ {bkM,akomegaM},{bomegaM,aomegaM} }])/dM;
+omegacM=-(Det[{ {akM,bkM},{akomegaM,bomegaM} }])/dM;
+
+
+{Tan[ArcTan@aobM+paAngleM](k+kcM)-omegacM, Tan[-ArcTan@aobM+paAngleM](k+kcM)-omegacM}
+
+
+];
+
+
+TwoBeamsAxialSymPlot[theta1_,theta2_,g1_,g2_,krange_:{-5,5,0.01}]:=Module[{pltDataHyperFunM,paDataM,g1M,g2M,theta1M,theta2M,asymM},
+(*g1M=-0.5(2Pi);
+g2M=0.5(2Pi);
+*)
+g1M=g1;
+g2M=g2;
+
+theta1M=theta1;
+theta2M=theta2;
+
+pltDataHyperFunM=Table[-{k,#}&/@TwoBeamsAxialSymHyperFun[k,theta1M,theta2M,g1M,g2M],
+{k,-5,5,0.01}]//Transpose;
+paDataM=Table[{k,#}&/@TwoBeamsAxialSymPrincipalAxis[k,theta1M,theta2M,g1M,g2M],{k,krange[[1]],krange[[2]],krange[[3]]}]//Transpose;
+asymM=Table[{k,#}&/@TwoBeamsAxialSymAsymptotic[k,theta1M,theta2M,g1M,g2M],{k,krange[[1]],krange[[2]],krange[[3]]}]//Transpose;
+
+
+
+Show[
+ListPlot[pltDataHyperFunM,Joined->True,Frame->True,FrameLabel->{"k","\[Omega]"}],
+ListPlot[paDataM,Joined->True,Frame->True,PlotStyle->LightGray],
+ListPlot[asymM,Joined->True,Frame->True,PlotStyle->{Directive[Dashed,LightGray],Directive[Dashed,LightGray]}],
+ImageSize->Large]
+
+];
+
+(* END Two Beams Hyperbola *)
 
 EndPackage[]
