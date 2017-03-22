@@ -163,4 +163,108 @@ ImageSize->Large]
 
 (* END Two Beams Hyperbola *)
 
+
+
+(* BEGIN Arbitrary N Beams *)
+
+NBeamsLR::usage = "Generates N Beams with crossing spectrum; NBeamsLR[beams] returns a nested list {{-g,theta1},{g,theta2}}";
+NBeamsH::usage = "Generates N Beams with homogeneous spectrum; NBeamsH[beams] returns a nested list {{g,theta1},{g,theta2}}";
+NBeamsOmegaNPlt::usage="NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5}]";
+NBeamsAxialSymOmegaKEqn::usage = "NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]";
+NBeamsAxialSymOmegaKPolyEqn::usage = "NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]";
+NBeamsAxialSymOmegaFunPoly::usage = "NBeamsAxialSymOmegaFunPoly[k_,beams_]";
+NBeamsOmegaKPlt::usage = "NBeamsOmegaKPlt[nbeams_,kRange_:{-4.5,4.5}]";
+
+NBeamsLR[beams_]:=Module[{hombmM},
+
+hombmM=Transpose[
+({(2Pi)/beams,#}&/@Table[ArcCos[0.9+beam (-0.9+0.3)/(beams-1)],{beam,0,beams-1}])
+];
+
+
+hombmM[[1]]=Join[
+Table[-1(hombmM)[[1,i]],{i,1,beams/2}],
+Table[(hombmM)[[1,i]],{i,beams/2+1,beams}]
+];
+
+Transpose@hombmM
+
+];
+
+NBeamsH[beams_]:=Module[{hombmM},
+
+hombmM=Transpose[
+({(2Pi)/beams,#}&/@Table[ArcCos[0.9+beam (-0.9+0.3)/(beams-1)],{beam,0,beams-1}])
+];
+
+
+Transpose@hombmM
+
+];
+
+
+
+
+NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5}]:=Module[{beamsomegaKM,omeganM,beamsOmegaKCleanM,beamsOmegaKPltM,nbeamsM,beamsSingularityM,gridlinesM},
+
+nbeamsM=nbeams;
+
+omeganM[n_]:=-(1/4)Total[
+(#[[1]] (1-Cos[#[[2]]])/(1-n Cos[#[[2]]]))&/@nbeamsM
+];
+
+gridlinesM=1/Cos[#[[2]]]&/@nbeams;
+
+beamsOmegaKPltM=Plot[omeganM[n],{n,nRange[[1]],nRange[[2]]},Frame->True,FrameLabel->{"n","\[Omega]"},ImageSize->Large,PlotLabel->"Beams: "<>ToString@Length@nbeamsM,PlotStyle->Gray,PlotRange->{nRange,{-10,10}},Exclusions->gridlinesM];
+
+Show[beamsOmegaKPltM,GridLines->{gridlinesM,None}]
+
+];
+
+
+NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]:=4== Total[
+(#[[1]](1-Cos[#[[2]]]^2) )/(omega-k Cos[#[[2]]])&/@beams
+];
+NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]:=4Apply[Times,(omega-k Cos[#[[2]]])&/@beams]== Total[
+Table[
+(beams[[i,1]](1-Cos[beams[[i,2]]]^2) )Apply[Times,(omega-k Cos[#[[2]]])&/@beams]/(omega-k Cos[beams[[i,2]]]),
+{i,1,Length@beams}]
+];
+NBeamsAxialSymOmegaFunPoly[k_,beams_]:=omega/.{ToRules@Reduce[NBeamsAxialSymOmegaKPolyEqn[omega,k,beams],omega]};
+
+NBeamsOmegaKPlt[nbeams_,kRange_:{-4.5,4.5}]:=Module[{beamsomegaKM,beamsOmegaKCleanM,beamsOmegaKPltM,nbeamsM,beamsSingularityM},
+
+nbeamsM=nbeams;
+
+beamsomegaKM=Table[
+-{k,#}&/@NBeamsAxialSymOmegaFunPoly[k,nbeamsM],
+{k,-kRange[[2]],-kRange[[1]],0.01}];
+
+
+(*
+beamsomegaKM=Table[
+-{k,#}&/@NBeamsAxialSymOmegaKPoly[k,NBeamsLR[nbeamsM]],
+{k,-4.5,4.5,0.01}];*)
+
+
+beamsOmegaKCleanM=DeleteCases[beamsomegaKM,x_/;Length@x!=Length@nbeamsM];
+
+Transpose@beamsOmegaKCleanM;
+
+beamsSingularityM=Plot[(Transpose@Cos@nbeamsM)[[2]]x,{x,kRange[[1]],kRange[[2]]},PlotStyle->Directive[Orange,Dashing[0.03]]];
+
+{beamsOmegaKPltM=ListPlot[beamsomegaKM,Joined->False,Frame->True,FrameLabel->{"k","\[Omega]"},ImageSize->Large,PlotLabel->ToString@Length@nbeamsM<>" Beams",PlotStyle->Gray,PlotRange->{kRange,Automatic}],
+Show[beamsOmegaKPltM,beamsSingularityM],
+beamsomegaKM
+}
+
+]
+
+
+(* END Arbitrary N Beams *)
+
+
 EndPackage[]
+
+
+
