@@ -283,30 +283,47 @@ beamsomegaKM
 
 
 (* BEGIN Continuous Useful *)
-intFun0[omega_,k_,ct1_,ct2_]:=(omega (-Log[Abs[1-(ct1 k)/omega]]+Log[Abs[1-(ct2 k)/omega]]))/k;
-intFun1[omega_,k_,ct1_,ct2_]:=(omega ((-ct1+ct2) k+omega Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/k^2;
-intFun2[omega_,k_,ct1_,ct2_]:=(omega (-(ct1-ct2) k ((ct1+ct2) k+2 omega)+2 omega^2 Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/(2 k^3);
-intFun0n[n_,ct1_,ct2_]:= (-Log[Abs[1-ct1 n]]+Log[Abs[1-ct2 n]])/n;
-intFun1n[n_,ct1_,ct2_]:=((-ct1+ct2) +Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n)/n;
-intFun2n[n_,ct1_,ct2_]:= (-(ct1-ct2) ((ct1+ct2) +2/n)+2 Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n^2)/(2  n);
+IntFun0[omega_,k_,ct1_,ct2_]:=(omega (-Log[Abs[1-(ct1 k)/omega]]+Log[Abs[1-(ct2 k)/omega]]))/k;
+IntFun1[omega_,k_,ct1_,ct2_]:=(omega ((-ct1+ct2) k+omega Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/k^2;
+IntFun2[omega_,k_,ct1_,ct2_]:=(omega (-(ct1-ct2) k ((ct1+ct2) k+2 omega)+2 omega^2 Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/(2 k^3);
+IntFun0n[n_,ct1_,ct2_]:= (-Log[Abs[1-ct1 n]]+Log[Abs[1-ct2 n]])/n;
+IntFun1n[n_,ct1_,ct2_]:=((-ct1+ct2) +Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n)/n;
+IntFun2n[n_,ct1_,ct2_]:= (-(ct1-ct2) ((ct1+ct2) +2/n)+2 Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n^2)/(2  n);
+
+
+ConAxialSymOmegaNMAA[n_,spect_:{{{0.9,0.6},-1},{{0.6,0.3},1}}]:=Module[{spectM},
+
+spectM=spect;
+(*{{{0.9,0.6},-1},
+{{0.6,0.3},1}};
+*)
+
+Total[
+#[[2]](IntFun0n[n,#[[1,1]],#[[1,2]]]-IntFun2n[n,#[[1,1]],#[[1,2]]])/(4)&/@spectM
+]
+
+]
 
 (* END Continuous Useful *)
 
 
 (* BEGIN Continuous MAA and MZA Solution: NO CROSSING *)
 
-omegaFunHoMZA[n_,{0.9,0.3}]:=Module[{},
+ConAxialSymOmegaNMZA[n_,spect_:{{{0.9,0.6},-1},{{0.6,0.3},1}}]:=Module[{spectM,i1mzaM,i2mzaM,i0mzaM},
 
-i0Homza1M=intFun0n[n,0.9,0.3];
-i2Homza1M=intFun2n[n,0.9,0.3]//FullSimplify;
-i1Homza1M=intFun1n[n,0.9,0.3]//FullSimplify;
+spectM=spect;
+(*{{{0.9,0.3},1}};*)
+(*{{{0.9,0.6},-1},{{0.6,0.3},1}}; *)
+(*spect;*)
 
 
-i0Homza1absM=intFun0n[n,c1,c2];
-i2Homza1absM=intFun2n[n,c1,c2]//FullSimplify;
-i1Homza1absM=intFun1n[n,c1,c2]//FullSimplify;
+i0mzaM=Total[#[[2]] IntFun0n[n,#[[1,1]],#[[1,2]]]&/@spectM];
+i2mzaM=Total[#[[2]] IntFun2n[n,#[[1,1]],#[[1,2]]]&/@spectM];
+i1mzaM=Total[#[[2]] IntFun1n[n,#[[1,1]],#[[1,2]]]&/@spectM];
 
-(-4(i0Homza1M)(i2Homza1M)+4 i1Homza1M^2+8(i0Homza1M+i2Homza1M))/(-16)
+
+(-4(i0mzaM)(i2mzaM)+4 i1mzaM^2+8(i0mzaM+i2mzaM))/(-16)
+
 
 ]
 
