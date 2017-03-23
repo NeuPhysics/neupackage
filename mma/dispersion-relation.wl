@@ -165,7 +165,7 @@ ImageSize->Large]
 
 
 
-(* BEGIN Arbitrary N Beams *)
+(* BEGIN Arbitrary N Beams MAA Solution *)
 
 NBeamsLR::usage = "Generates N Beams with crossing spectrum; NBeamsLR[beams] returns a nested list {{-g,theta1},{g,theta2}}";
 NBeamsH::usage = "Generates N Beams with homogeneous spectrum; NBeamsH[beams] returns a nested list {{g,theta1},{g,theta2}}";
@@ -205,27 +205,45 @@ Transpose@hombmM
 
 
 
-NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5}]:=Module[{beamsomegaKM,omeganM,beamsOmegaKCleanM,beamsOmegaKPltM,nbeamsM,beamsSingularityM,gridlinesM},
+NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5},kRange_:{-10,10}]:=Module[{beamsomegaKM,omeganM,beamsOmegaKCleanM,beamsOmegaKPltM,nbeamsM,beamsSingularityM,gridlinesM},
 
 nbeamsM=nbeams;
 
 omeganM[n_]:=-(1/4)Total[
-(#[[1]] (1-Cos[#[[2]]])/(1-n Cos[#[[2]]]))&/@nbeamsM
+(#[[1]] (1-Cos[#[[2]]]^2)/(1-n Cos[#[[2]]]))&/@nbeamsM
 ];
 
-gridlinesM=1/Cos[#[[2]]]&/@nbeams;
+gridlinesM=Join[1/Cos[#[[2]]]&/@nbeams,{{1/(0.6),Purple}}];
 
-beamsOmegaKPltM=Plot[omeganM[n],{n,nRange[[1]],nRange[[2]]},Frame->True,FrameLabel->{"n","\[Omega]"},ImageSize->Large,PlotLabel->"Beams: "<>ToString@Length@nbeamsM,PlotStyle->Gray,PlotRange->{nRange,{-10,10}},Exclusions->gridlinesM];
+beamsOmegaKPltM=Plot[omeganM[n],{n,nRange[[1]],nRange[[2]]},Frame->True,FrameLabel->{"n","\[Omega]"},ImageSize->Large,PlotLabel->"Beams: "<>ToString@Length@nbeamsM,PlotStyle->Gray,PlotRange->{nRange,kRange},Exclusions->gridlinesM];
 
 Show[beamsOmegaKPltM,GridLines->{gridlinesM,None}]
 
 ];
 
+NBeamsKNPlt[nbeams_,nRange_:{-4.5,4.5},kRange_:{-10,10}]:=Module[{beamsomegaKM,omeganM,knM,beamsOmegaKCleanM,beamsOmegaKPltM,beamsKNPltM,nbeamsM,beamsSingularityM,gridlinesM},
 
-NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]:=4== Total[
+nbeamsM=nbeams;
+
+omeganM[n_]:=-(1/4)Total[
+(#[[1]] (1-Cos[#[[2]]]^2)/(1-n Cos[#[[2]]]))&/@nbeamsM
+];
+
+knM[n_]:= n omeganM[n];
+
+gridlinesM=Join[1/Cos[#[[2]]]&/@nbeams,{{1/(0.6),Purple}}];
+
+beamsKNPltM=Plot[knM[n],{n,nRange[[1]],nRange[[2]]},Frame->True,FrameLabel->{"n","k"},ImageSize->Large,PlotLabel->"Beams: "<>ToString@Length@nbeamsM,PlotStyle->Gray,PlotRange->{nRange,kRange},Exclusions->gridlinesM];
+
+Show[beamsKNPltM,GridLines->{gridlinesM,None}]
+
+];
+
+
+NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]:=-4== Total[
 (#[[1]](1-Cos[#[[2]]]^2) )/(omega-k Cos[#[[2]]])&/@beams
 ];
-NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]:=4Apply[Times,(omega-k Cos[#[[2]]])&/@beams]== Total[
+NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]:=-4 Apply[Times,(omega-k Cos[#[[2]]])&/@beams]== Total[
 Table[
 (beams[[i,1]](1-Cos[beams[[i,2]]]^2) )Apply[Times,(omega-k Cos[#[[2]]])&/@beams]/(omega-k Cos[beams[[i,2]]]),
 {i,1,Length@beams}]
@@ -237,7 +255,7 @@ NBeamsOmegaKPlt[nbeams_,kRange_:{-4.5,4.5}]:=Module[{beamsomegaKM,beamsOmegaKCle
 nbeamsM=nbeams;
 
 beamsomegaKM=Table[
--{k,#}&/@NBeamsAxialSymOmegaFunPoly[k,nbeamsM],
+{k,#}&/@NBeamsAxialSymOmegaFunPoly[k,nbeamsM],
 {k,-kRange[[2]],-kRange[[1]],0.01}];
 
 
@@ -253,7 +271,7 @@ Transpose@beamsOmegaKCleanM;
 
 beamsSingularityM=Plot[(Transpose@Cos@nbeamsM)[[2]]x,{x,kRange[[1]],kRange[[2]]},PlotStyle->Directive[Orange,Dashing[0.03]]];
 
-{beamsOmegaKPltM=ListPlot[beamsomegaKM,Joined->False,Frame->True,FrameLabel->{"k","\[Omega]"},ImageSize->Large,PlotLabel->ToString@Length@nbeamsM<>" Beams",PlotStyle->Gray,PlotRange->{kRange,Automatic}],
+{beamsOmegaKPltM=ListPlot[beamsomegaKM,Joined->False,Frame->True,FrameLabel->{"k","\[Omega]"},ImageSize->Large,PlotLabel->ToString@Length@nbeamsM<>" Beams",PlotStyle->Gray,PlotRange->{kRange,Automatic},AspectRatio->1],
 Show[beamsOmegaKPltM,beamsSingularityM],
 beamsomegaKM
 }
@@ -261,7 +279,39 @@ beamsomegaKM
 ]
 
 
-(* END Arbitrary N Beams *)
+(* END Arbitrary N Beams MAA Solution *)
+
+
+(* BEGIN Continuous Useful *)
+intFun0[omega_,k_,ct1_,ct2_]:=(omega (-Log[Abs[1-(ct1 k)/omega]]+Log[Abs[1-(ct2 k)/omega]]))/k;
+intFun1[omega_,k_,ct1_,ct2_]:=(omega ((-ct1+ct2) k+omega Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/k^2;
+intFun2[omega_,k_,ct1_,ct2_]:=(omega (-(ct1-ct2) k ((ct1+ct2) k+2 omega)+2 omega^2 Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/(2 k^3);
+intFun0n[n_,ct1_,ct2_]:= (-Log[Abs[1-ct1 n]]+Log[Abs[1-ct2 n]])/n;
+intFun1n[n_,ct1_,ct2_]:=((-ct1+ct2) +Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n)/n;
+intFun2n[n_,ct1_,ct2_]:= (-(ct1-ct2) ((ct1+ct2) +2/n)+2 Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n^2)/(2  n);
+
+(* END Continuous Useful *)
+
+
+(* BEGIN Continuous MAA and MZA Solution: NO CROSSING *)
+
+omegaFunHoMZA[n_,{0.9,0.3}]:=Module[{},
+
+i0Homza1M=intFun0n[n,0.9,0.3];
+i2Homza1M=intFun2n[n,0.9,0.3]//FullSimplify;
+i1Homza1M=intFun1n[n,0.9,0.3]//FullSimplify;
+
+
+i0Homza1absM=intFun0n[n,c1,c2];
+i2Homza1absM=intFun2n[n,c1,c2]//FullSimplify;
+i1Homza1absM=intFun1n[n,c1,c2]//FullSimplify;
+
+(-4(i0Homza1M)(i2Homza1M)+4 i1Homza1M^2+8(i0Homza1M+i2Homza1M))/(-16)
+
+]
+
+
+(* END Continuous MAA and MZA Solution: NO CROSSING  *)
 
 
 EndPackage[]
