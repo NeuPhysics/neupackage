@@ -209,7 +209,7 @@ NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5},kRange_:{-10,10}]:=Module[{beamsomega
 
 nbeamsM=nbeams;
 
-omeganM[n_]:=-(1/4)Total[
+omeganM[n_]:=(1/4)Total[
 (#[[1]] (1-Cos[#[[2]]]^2)/(1-n Cos[#[[2]]]))&/@nbeamsM
 ];
 
@@ -225,7 +225,7 @@ NBeamsKNPlt[nbeams_,nRange_:{-4.5,4.5},kRange_:{-10,10}]:=Module[{beamsomegaKM,o
 
 nbeamsM=nbeams;
 
-omeganM[n_]:=-(1/4)Total[
+omeganM[n_]:=(1/4)Total[
 (#[[1]] (1-Cos[#[[2]]]^2)/(1-n Cos[#[[2]]]))&/@nbeamsM
 ];
 
@@ -240,10 +240,10 @@ Show[beamsKNPltM,GridLines->{gridlinesM,None}]
 ];
 
 
-NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]:=-4== Total[
+NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]:=4== Total[
 (#[[1]](1-Cos[#[[2]]]^2) )/(omega-k Cos[#[[2]]])&/@beams
 ];
-NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]:=-4 Apply[Times,(omega-k Cos[#[[2]]])&/@beams]== Total[
+NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]:=4 Apply[Times,(omega-k Cos[#[[2]]])&/@beams]== Total[
 Table[
 (beams[[i,1]](1-Cos[beams[[i,2]]]^2) )Apply[Times,(omega-k Cos[#[[2]]])&/@beams]/(omega-k Cos[beams[[i,2]]]),
 {i,1,Length@beams}]
@@ -283,12 +283,13 @@ beamsomegaKM
 
 
 (* BEGIN Continuous Useful *)
-IntFun0[omega_,k_,ct1_,ct2_]:=(omega (-Log[Abs[1-(ct1 k)/omega]]+Log[Abs[1-(ct2 k)/omega]]))/k;
-IntFun1[omega_,k_,ct1_,ct2_]:=(omega ((-ct1+ct2) k+omega Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/k^2;
-IntFun2[omega_,k_,ct1_,ct2_]:=(omega (-(ct1-ct2) k ((ct1+ct2) k+2 omega)+2 omega^2 Log[Abs[(ct2 k-omega)/(ct1 k-omega)]]))/(2 k^3);
-IntFun0n[n_,ct1_,ct2_]:= (-Log[Abs[1-ct1 n]]+Log[Abs[1-ct2 n]])/n;
-IntFun1n[n_,ct1_,ct2_]:=((-ct1+ct2) +Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n)/n;
-IntFun2n[n_,ct1_,ct2_]:= (-(ct1-ct2) ((ct1+ct2) +2/n)+2 Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n^2)/(2  n);
+
+IntFun0[omega_,k_,ct1_,ct2_]:=(omega (-Log[(1-(ct1 k)/omega)/(1-(ct2 k)/omega)]))/k;
+IntFun1[omega_,k_,ct1_,ct2_]:=(omega ((-ct1+ct2) k+omega Log[(ct2 k-omega)/(ct1 k-omega)]))/k^2;
+IntFun2[omega_,k_,ct1_,ct2_]:=(omega (-(ct1-ct2) k ((ct1+ct2) k+2 omega)+2 omega^2 Log[(ct2 k-omega)/(ct1 k-omega)]))/(2 k^3);
+IntFun0n[n_,ct1_,ct2_]:= (-Log[(1-ct1 n)/(1-ct2 n)])/n;
+IntFun1n[n_,ct1_,ct2_]:=((-ct1+ct2) +Log[(ct2 n-1)/(ct1 n-1)]/n)/n;
+IntFun2n[n_,ct1_,ct2_]:= (-(ct1-ct2) ((ct1+ct2) +2/n)+2 Log[(ct2 n-1)/(ct1 n-1)]/n^2)/(2  n);
 
 
 ConAxialSymOmegaNMAA[n_,spect_:{{{0.9,0.6},-1},{{0.6,0.3},1}}]:=Module[{spectM},
@@ -322,7 +323,8 @@ i2mzaM=Total[#[[2]] IntFun2n[n,#[[1,1]],#[[1,2]]]&/@spectM];
 i1mzaM=Total[#[[2]] IntFun1n[n,#[[1,1]],#[[1,2]]]&/@spectM];
 
 
-(-4(i0mzaM)(i2mzaM)+4 i1mzaM^2+8(i0mzaM+i2mzaM))/(-16)
+{(i0mzaM-i2mzaM+Sqrt[(i0mzaM+i2mzaM-2i1mzaM)(i0mzaM+i2mzaM+2i1mzaM)])/(-4),(i0mzaM-i2mzaM-Sqrt[(i0mzaM+i2mzaM-2i1mzaM)(i0mzaM+i2mzaM+2i1mzaM)])/(-4)}
+(*{(-(i0mzaM)(i2mzaM)+ i1mzaM^2+8(i0mzaM+i2mzaM))/(-4)}*)
 
 
 ]
