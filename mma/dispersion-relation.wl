@@ -5,8 +5,8 @@ BeginPackage["dispersion`"]
 eta=DiagonalMatrix[{1,-1,-1,-1}];
 
 kno[nIndex_,theta_,phi_]:={1,nIndex Cos[phi]Sin[theta],nIndex Sin[phi]Sin[theta],nIndex Cos[theta]};
-k[omega_,nIndex_,theta_,phi_]:=omega kno[nIndex,theta,phi];
-v[theta_,phi_]:={1,Cos[phi]Sin[theta],Sin[phi]Sin[theta],Cos[theta]};
+kvect[omega_,nIndex_,theta_,phi_]:=omega kno[nIndex,theta,phi];
+vvect[theta_,phi_]:={1,Cos[phi]Sin[theta],Sin[phi]Sin[theta],Cos[theta]};
 
 vvMatrix[theta_,phi_]=Outer[Times,v[theta,phi],v[theta,phi]];
 

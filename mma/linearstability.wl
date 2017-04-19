@@ -55,4 +55,12 @@ End[]
 (* Solving Fourth Order Equations END *)
 
 
+(* Continuous Case BEGIN *)
+(* This part solves the  *)
+
+
+
+(* Continuous Case END *)
+
+
 EndPackage[]
