@@ -291,6 +291,12 @@ IntFun0n[n_,ct1_,ct2_]:= (-Log[(1-ct1 n)/(1-ct2 n)])/n;
 IntFun1n[n_,ct1_,ct2_]:=((-ct1+ct2) +Log[(ct2 n-1)/(ct1 n-1)]/n)/n;
 IntFun2n[n_,ct1_,ct2_]:= (-(ct1-ct2) ((ct1+ct2) +2/n)+2 Log[(ct2 n-1)/(ct1 n-1)]/n^2)/(2  n);
 
+IntFun0nABS[n_,ct1_,ct2_]:= (-Log[Abs[(1-ct1 n)/(1-ct2 n)]])/n;
+IntFun1nABS[n_,ct1_,ct2_]:=((-ct1+ct2) +Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n)/n;
+IntFun2nABS[n_,ct1_,ct2_]:= (-(ct1-ct2) ((ct1+ct2) +2/n)+2 Log[Abs[(ct2 n-1)/(ct1 n-1)]]/n^2)/(2  n);
+
+(* END Continuous Useful *)
+
 
 ConAxialSymOmegaNMAA[n_,spect_:{{{0.9,0.6},-1},{{0.6,0.3},1}}]:=Module[{spectM},
 
@@ -305,10 +311,23 @@ Total[
 
 ]
 
-(* END Continuous Useful *)
+
+ConAxialSymOmegaNMAAABS[n_,spect_:{{{0.9,0.6},-1},{{0.6,0.3},1}}]:=Module[{spectM},
+
+spectM=spect;
+(*{{{0.9,0.6},-1},
+{{0.6,0.3},1}};
+*)
+
+Total[
+#[[2]](IntFun0nABS[n,#[[1,1]],#[[1,2]]]-IntFun2nABS[n,#[[1,1]],#[[1,2]]])/(4)&/@spectM
+]
+
+]
 
 
-(* BEGIN Continuous MAA and MZA Solution: NO CROSSING *)
+
+(* BEGIN Continuous MAA and MZA Solution: NO Feed in Spectrum *)
 
 ConAxialSymOmegaNMZA[n_,spect_:{{{0.9,0.6},-1},{{0.6,0.3},1}}]:=Module[{spectM,i1mzaM,i2mzaM,i0mzaM},
 
@@ -330,7 +349,35 @@ i1mzaM=Total[#[[2]] IntFun1n[n,#[[1,1]],#[[1,2]]]&/@spectM];
 ]
 
 
-(* END Continuous MAA and MZA Solution: NO CROSSING  *)
+
+ConAxialSymOmegaNMZAABS[n_,spect_:{{{0.9,0.6},-1},{{0.6,0.3},1}}]:=Module[{spectM,i1mzaM,i2mzaM,i0mzaM},
+
+spectM=spect;
+(*{{{0.9,0.3},1}};*)
+(*{{{0.9,0.6},-1},{{0.6,0.3},1}}; *)
+(*spect;*)
+
+
+i0mzaM=Total[#[[2]] IntFun0nABS[n,#[[1,1]],#[[1,2]]]&/@spectM];
+i2mzaM=Total[#[[2]] IntFun2nABS[n,#[[1,1]],#[[1,2]]]&/@spectM];
+i1mzaM=Total[#[[2]] IntFun1nABS[n,#[[1,1]],#[[1,2]]]&/@spectM];
+
+
+{(i0mzaM-i2mzaM+Sqrt[(i0mzaM+i2mzaM-2i1mzaM)(i0mzaM+i2mzaM+2i1mzaM)])/(-4),(i0mzaM-i2mzaM-Sqrt[(i0mzaM+i2mzaM-2i1mzaM)(i0mzaM+i2mzaM+2i1mzaM)])/(-4)}
+(*{(-(i0mzaM)(i2mzaM)+ i1mzaM^2+8(i0mzaM+i2mzaM))/(-4)}*)
+
+
+]
+
+
+(* END Continuous MAA and MZA Solution: Feed in Spectrum  *)
+
+
+(* BEGIN Continuous Feed in Function as spectrum *)
+
+
+
+(* END Continuous Feed in Function as spectrum *)
 
 
 EndPackage[]
