@@ -179,6 +179,34 @@ matM
 ]
 
 
+matRegularZeroDiag[dimension_,diagscale_,offdiag_]:=Module[{matM,diagM,midM,n},
+
+n=(dimension-1)/2;
+
+matM=IdentityMatrix[2n+1];
+midM=Floor[n+1];
+
+
+Do[
+matM[[midM+i,midM+i]]= 0,
+{i,-midM+1,midM-1}
+];
+
+
+Do[
+matM[[midM+i,midM+i+1]]=offdiag,
+{i,-midM+1,midM-2}
+];
+
+Do[
+matM[[midM+i+1,midM+i]]=offdiag,
+{i,-midM+1,midM-2}
+];
+
+matM
+
+]
+
 
 eigenSys[dimension_, diagscale_, offdiag_]:=Transpose@Sort[Transpose@Eigensystem[  matRegular[dimension, diagscale , offdiag] ],#1[[1]]<#2[[1]]&]
 
