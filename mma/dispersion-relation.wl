@@ -375,6 +375,16 @@ i1mzaM=Total[#[[2]] IntFun1nABS[n,#[[1,1]],#[[1,2]]]&/@spectM];
 
 (* BEGIN Continuous Feed in Function as spectrum *)
 
+(* Define the integral functions to be used in dispersion relation *)
+IntFun0nFSpect[n_,ct1_,ct2_,spectrumFun_]:= NIntegrate[(spectrumFun@u)/(1-n u),{u,ct1,ct2},Exclusions->{1/n}];
+IntFun1nFSpect[n_,ct1_,ct2_,spectrumFun_]:= NIntegrate[(spectrumFun@u)u/(1-n u),{u,ct1,ct2},Exclusions->{1/n}];
+IntFun2nFSpect[n_,ct1_,ct2_,spectrumFun_]:= NIntegrate[(spectrumFun@u)u^2/(1-n u),{u,ct1,ct2},Exclusions->{1/n}];
+
+SpectrumOmegaNMAA[n_?NumberQ,ct1_?NumberQ,ct2_?NumberQ,spectrumFun_]:=(IntFun0nFSpect[n,ct1,ct2,spectrumFun]-IntFun2nFSpect[n,ct1,ct2,spectrumFun])/(-4);
+
+SpectrumOmegaNMZA[n_?NumberQ,ct1_?NumberQ,ct2_?NumberQ,spectrumFun_]:=-{(IntFun0nFSpect[n,ct1,ct2,spectrumFun]-IntFun2nFSpect[n,ct1,ct2,spectrumFun]+\[Sqrt]((IntFun0nFSpect[n,ct1,ct2,spectrumFun]+IntFun2nFSpect[n,ct1,ct2,spectrumFun]-2IntFun1nFSpect[n,ct1,ct2,spectrumFun])(IntFun0nFSpect[n,ct1,ct2,spectrumFun]+IntFun2nFSpect[n,ct1,ct2,spectrumFun]+2IntFun1nFSpect[n,ct1,ct2,spectrumFun])))/(-4),
+(IntFun0nFSpect[n,ct1,ct2,spectrumFun]-IntFun2nFSpect[n,ct1,ct2,spectrumFun]-\[Sqrt]((IntFun0nFSpect[n,ct1,ct2,spectrumFun]+IntFun2nFSpect[n,ct1,ct2,spectrumFun]-2IntFun1nFSpect[n,ct1,ct2,spectrumFun])(IntFun0nFSpect[n,ct1,ct2,spectrumFun]+IntFun2nFSpect[n,ct1,ct2,spectrumFun]+2IntFun1nFSpect[n,ct1,ct2,spectrumFun])))/(-4)
+};
 
 
 (* END Continuous Feed in Function as spectrum *)
