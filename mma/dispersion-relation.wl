@@ -386,6 +386,83 @@ SpectrumOmegaNMZA[n_?NumberQ,ct1_?NumberQ,ct2_?NumberQ,spectrumFun_]:=-{(IntFun0
 (IntFun0nFSpect[n,ct1,ct2,spectrumFun]-IntFun2nFSpect[n,ct1,ct2,spectrumFun]-\[Sqrt]((IntFun0nFSpect[n,ct1,ct2,spectrumFun]+IntFun2nFSpect[n,ct1,ct2,spectrumFun]-2IntFun1nFSpect[n,ct1,ct2,spectrumFun])(IntFun0nFSpect[n,ct1,ct2,spectrumFun]+IntFun2nFSpect[n,ct1,ct2,spectrumFun]+2IntFun1nFSpect[n,ct1,ct2,spectrumFun])))/(-4)
 };
 
+(* Numerically Find the Instabilities *)
+
+SpectrumOmegaKMAAEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+IntFun0nFFM=NIntegrate[(spectM@u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun2nFFM=NIntegrate[(spectM[u]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+
+
+eqnLHSM[omega_,k_]:=omega-(IntFun0nFFM-IntFun2nFFM)/(-4);
+
+
+{ComplexExpand[Re[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]],
+ComplexExpand[Im[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]]
+}
+
+
+]
+
+
+SpectrumOmegaKMZApEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+IntFun0nFFM=NIntegrate[(spectM@u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun1nFFM=NIntegrate[(spectM@u)u/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun2nFFM=NIntegrate[(spectM[u]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+
+
+eqnLHSM[omega_,k_]:=omega-(IntFun0nFFM-IntFun2nFFM+\[Sqrt]((IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM)))/(-4);
+
+
+
+{ComplexExpand[Re[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]],
+ComplexExpand[Im[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]]
+}
+
+
+]
+
+
+SpectrumOmegaKMZAmEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+IntFun0nFFM=NIntegrate[(spectM@u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun1nFFM=NIntegrate[(spectM@u)u/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun2nFFM=NIntegrate[(spectM[u]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+
+
+eqnLHSM[omega_,k_]:=omega-(IntFun0nFFM-IntFun2nFFM-\[Sqrt]((IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM)))/(-4);
+
+
+
+{ComplexExpand[Re[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]],
+ComplexExpand[Im[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]]
+}
+
+
+]
+
 
 (* END Continuous Feed in Function as spectrum *)
 
