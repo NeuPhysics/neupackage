@@ -327,16 +327,16 @@ Total[
 
 
 
-ConAxialSymOmegaNMAAEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+ConAxialSymOmegaNMAAEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_,wp_:$MachinePrecision]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
 
 
 spectM=spect;
 
 IntFun0nFFM=Total[
-	NIntegrate[(#[[2]])/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+	NIntegrate[(#[[2]])/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]},WorkingPrecision->wp]&/@spectM
 ];
 IntFun2nFFM=Total[
-	NIntegrate[(#[[2]]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+	NIntegrate[(#[[2]]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]},WorkingPrecision->wp]&/@spectM
 ];
 
 
@@ -353,16 +353,16 @@ eqnLHSM
 
 ]
 
-ConAxialSymOmegaNMAAEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+ConAxialSymOmegaNMAAEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_,wp_:$MachinePrecision]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
 
 
 spectM=spect;
 
 IntFun0nFFM=Total[
-	NIntegrate[(#[[2]])/(1-k u/omega),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+	NIntegrate[(#[[2]])/(1-k u/omega),{u,#[[1,1]],#[[1,2]]},WorkingPrecision->wp]&/@spectM
 ];
 IntFun2nFFM=Total[
-	NIntegrate[(#[[2]]u^2)/(1- k u/omega),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+	NIntegrate[(#[[2]]u^2)/(1- k u/omega),{u,#[[1,1]],#[[1,2]]},WorkingPrecision->wp]&/@spectM
 ];
 
 
@@ -390,6 +390,25 @@ i1mzaM=Total[#[[2]] IntFun1n[n,#[[1,1]],#[[1,2]]]&/@spectM];
 
 
 {(i0mzaM-i2mzaM+Sqrt[(i0mzaM+i2mzaM-2i1mzaM)(i0mzaM+i2mzaM+2i1mzaM)])/(-4),(i0mzaM-i2mzaM-Sqrt[(i0mzaM+i2mzaM-2i1mzaM)(i0mzaM+i2mzaM+2i1mzaM)])/(-4)}
+(*{(-(i0mzaM)(i2mzaM)+ i1mzaM^2+8(i0mzaM+i2mzaM))/(-4)}*)
+
+
+]
+
+ConAxialSymOmegaNMZASQRT[n_,spect_:{{{0.3,0.6},1},{{0.6,0.9},-1}}]:=Module[{spectM,i1mzaM,i2mzaM,i0mzaM},
+
+spectM=spect;
+(*{{{0.9,0.3},1}};*)
+(*{{{0.9,0.6},-1},{{0.6,0.3},1}}; *)
+(*spect;*)
+
+
+i0mzaM=Total[#[[2]] IntFun0n[n,#[[1,1]],#[[1,2]]]&/@spectM];
+i2mzaM=Total[#[[2]] IntFun2n[n,#[[1,1]],#[[1,2]]]&/@spectM];
+i1mzaM=Total[#[[2]] IntFun1n[n,#[[1,1]],#[[1,2]]]&/@spectM];
+
+
+(i0mzaM+i2mzaM-2i1mzaM)(i0mzaM+i2mzaM+2i1mzaM)
 (*{(-(i0mzaM)(i2mzaM)+ i1mzaM^2+8(i0mzaM+i2mzaM))/(-4)}*)
 
 
@@ -499,6 +518,43 @@ eqnLHSM
 
 
 
+
+
+ConAxialSymOmegaNMZApEqnLHSComplexN[omega_?NumericQ,k_?NumberQ,spect_,wp_:$MachinePrecision]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+(*
+IntFun0nFFM = Total[#[[2]] IntFun0n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+IntFun1nFFM = Total[#[[2]] IntFun2n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+IntFun2nFFM = Total[#[[2]] IntFun1n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+
+eqnLHSM=omega-(IntFun0nFFM-IntFun2nFFM+\[Sqrt]((IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM)))/(-4);
+*)
+
+(* NIntegrate method *)
+IntFun0nFFM[omegaF_?NumericQ,kF_?NumericQ]:=Total[
+	NIntegrate[(#[[2]])/(1-(kF) u/(omegaF)),{u,#[[1,1]],#[[1,2]]},WorkingPrecision->wp]&/@spectM
+];
+IntFun1nFFM[omegaF_?NumericQ,kF_?NumericQ]:=Total[
+	NIntegrate[(#[[2]]u)/(1-(kF) u/(omegaF)),{u,#[[1,1]],#[[1,2]]},WorkingPrecision->wp]&/@spectM
+];
+IntFun2nFFM[omegaF_?NumericQ,kF_?NumericQ]:=Total[
+	NIntegrate[(#[[2]]u^2)/(1-(kF) u/(omegaF)),{u,#[[1,1]],#[[1,2]]},WorkingPrecision->wp]&/@spectM
+];
+
+
+eqnLHSM=omega -(IntFun0nFFM[omega,k]-IntFun2nFFM[omega,k]+\[Sqrt]((IntFun0nFFM[omega,k]+IntFun2nFFM[omega,k]-2IntFun1nFFM[omega,k])(IntFun0nFFM[omega,k]+IntFun2nFFM[omega,k]+2IntFun1nFFM[omega,k])))/(-4);
+
+
+
+
+eqnLHSM
+
+
+
+]
 
 
 ConAxialSymOmegaNMZAmEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM,wpM},
