@@ -168,8 +168,9 @@ ImageSize->Large]
 (* BEGIN Arbitrary N Beams MAA Solution *)
 
 NBeamsLR::usage = "Generates N Beams with crossing spectrum; NBeamsLR[beams] returns a nested list {{-g,theta1},{g,theta2}}";
-NBeamsH::usage = "Generates N Beams with homogeneous spectrum; NBeamsH[beams] returns a nested list {{g,theta1},{g,theta2}}";
-NBeamsOmegaNPlt::usage="NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5}]";
+NBeamsH::usage = "Generates N Beams with isotropic spectrum; NBeamsH[beams] returns a nested list {{g,theta1},{g,theta2}}";
+NBeamsOmegaNPlt::usage="Plot \[Omega](n) for N beams given beams set up; NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5}], where nbeams should be {{g1,cos@theta1},{g2,cos@theta2},...}";
+NBeamsKNPlt::usage ="Plot k(n) for given spectra; NBeamsKNPlt[nbeams_,nRange_:{-4.5,4.5},kRange_:{-10,10}], where nbeams should be {{g1,cos@theta1},{g2,cos@theta2},...}";
 NBeamsAxialSymOmegaKEqn::usage = "NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]";
 NBeamsAxialSymOmegaKPolyEqn::usage = "NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]";
 NBeamsAxialSymOmegaFunPoly::usage = "NBeamsAxialSymOmegaFunPoly[k_,beams_]";
@@ -205,15 +206,16 @@ Transpose@hombmM
 
 
 
+
 NBeamsOmegaNPlt[nbeams_,nRange_:{-4.5,4.5},kRange_:{-10,10}]:=Module[{beamsomegaKM,omeganM,beamsOmegaKCleanM,beamsOmegaKPltM,nbeamsM,beamsSingularityM,gridlinesM},
 
 nbeamsM=nbeams;
 
 omeganM[n_]:=(1/4)Total[
-(#[[1]] (1-Cos[#[[2]]]^2)/(1-n Cos[#[[2]]]))&/@nbeamsM
+(#[[1]] (1-#[[2]]^2)/(1-n #[[2]]))&/@nbeamsM
 ];
 
-gridlinesM=Join[1/Cos[#[[2]]]&/@nbeams,{{1/(0.6),Purple}}];
+gridlinesM=Join[1/#[[2]]&/@nbeams,{{1/(0.6),Purple}}];
 
 beamsOmegaKPltM=Plot[omeganM[n],{n,nRange[[1]],nRange[[2]]},Frame->True,FrameLabel->{"n","\[Omega]"},ImageSize->Large,PlotLabel->"Beams: "<>ToString@Length@nbeamsM,PlotStyle->Gray,PlotRange->{nRange,kRange},Exclusions->gridlinesM];
 
@@ -226,12 +228,12 @@ NBeamsKNPlt[nbeams_,nRange_:{-4.5,4.5},kRange_:{-10,10}]:=Module[{beamsomegaKM,o
 nbeamsM=nbeams;
 
 omeganM[n_]:=(1/4)Total[
-(#[[1]] (1-Cos[#[[2]]]^2)/(1-n Cos[#[[2]]]))&/@nbeamsM
+(#[[1]] (1-#[[2]]^2)/(1-n #[[2]]))&/@nbeamsM
 ];
 
 knM[n_]:= n omeganM[n];
 
-gridlinesM=Join[1/Cos[#[[2]]]&/@nbeams,{{1/(0.6),Purple}}];
+gridlinesM=Join[1/#[[2]]&/@nbeams,{{1/(0.6),Purple}}];
 
 beamsKNPltM=Plot[knM[n],{n,nRange[[1]],nRange[[2]]},Frame->True,FrameLabel->{"n","k"},ImageSize->Large,PlotLabel->"Beams: "<>ToString@Length@nbeamsM,PlotStyle->Gray,PlotRange->{nRange,kRange},Exclusions->gridlinesM];
 
@@ -241,11 +243,11 @@ Show[beamsKNPltM,GridLines->{gridlinesM,None}]
 
 
 NBeamsAxialSymOmegaKEqn[omega_,k_,beams_]:=4== Total[
-(#[[1]](1-Cos[#[[2]]]^2) )/(omega-k Cos[#[[2]]])&/@beams
+(#[[1]](1-#[[2]]^2) )/(omega-k #[[2]])&/@beams
 ];
-NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]:=4 Apply[Times,(omega-k Cos[#[[2]]])&/@beams]== Total[
+NBeamsAxialSymOmegaKPolyEqn[omega_,k_,beams_]:=4 Apply[Times,(omega-k #[[2]])&/@beams]== Total[
 Table[
-(beams[[i,1]](1-Cos[beams[[i,2]]]^2) )Apply[Times,(omega-k Cos[#[[2]]])&/@beams]/(omega-k Cos[beams[[i,2]]]),
+(beams[[i,1]](1-beams[[i,2]]^2) )Apply[Times,(omega-k #[[2]])&/@beams]/(omega-k beams[[i,2]]),
 {i,1,Length@beams}]
 ];
 NBeamsAxialSymOmegaFunPoly[k_,beams_]:=omega/.{ToRules@Reduce[NBeamsAxialSymOmegaKPolyEqn[omega,k,beams],omega]};
@@ -269,7 +271,7 @@ beamsOmegaKCleanM=DeleteCases[beamsomegaKM,x_/;Length@x!=Length@nbeamsM];
 
 Transpose@beamsOmegaKCleanM;
 
-beamsSingularityM=Plot[(Transpose@Cos@nbeamsM)[[2]]x,{x,kRange[[1]],kRange[[2]]},PlotStyle->Directive[Orange,Dashing[0.03]]];
+beamsSingularityM=Plot[(Transpose@nbeamsM)[[2]]x,{x,kRange[[1]],kRange[[2]]},PlotStyle->Directive[Orange,Dashing[0.03]]];
 
 {beamsOmegaKPltM=ListPlot[beamsomegaKM,Joined->False,Frame->True,FrameLabel->{"k","\[Omega]"},ImageSize->Large,PlotLabel->ToString@Length@nbeamsM<>" Beams",PlotStyle->Gray,PlotRange->{kRange,Automatic},AspectRatio->1],
 Show[beamsOmegaKPltM,beamsSingularityM],
@@ -280,6 +282,173 @@ beamsomegaKM
 
 
 (* END Arbitrary N Beams MAA Solution *)
+
+
+(* BEGIN: New Methods to Calculate DR for Discrete Beams which is similar to the continuous code *)
+
+DBAxialSymIntFun0nTotal::usage = "Calculates I0; DBAxialSymIntFun0n[spect], where spect should be of the form {{g1,cos@theta1},{g2,cos@theta2},...}"
+DBAxialSymIntFun1nTotal::usage = "Calculates I1; DBAxialSymIntFun1n[spect], where spect should be of the form {{g1,cos@theta1},{g2,cos@theta2},...}"
+DBAxialSymIntFun2nTotal::usage = "Calculates I2; DBAxialSymIntFun2n[spect], where spect should be of the form {{g1,cos@theta1},{g2,cos@theta2},...}"
+
+DBAxialSymIntFun0nTotal[spect_,n_]:=Total[
+(  ( #[[1]] )/(1- n #[[2]]) )&/@spect
+];
+DBAxialSymIntFun1nTotal[spect_,n_]:=Total[
+( #[[1]] #[[2]] )/(1- n #[[2]])&/@spect
+];
+DBAxialSymIntFun2nTotal[spect_,n_]:=Total[
+( #[[1]] #[[2]]^2 )/(1- n #[[2]])&/@spect
+];
+
+
+DBAxialSymOmegaNMAA[spect_, n_]:=Module[{spectM},
+
+spectM = spect;
+
+( DBAxialSymIntFun0nTotal[spect,n] - DBAxialSymIntFun2nTotal[spect,n]) /4
+
+]
+
+
+DBAxialSymKNMAA[spect_, n_]:=Module[{spectM},
+
+spectM = spect;
+
+n * ( DBAxialSymIntFun0nTotal[spect,n] - DBAxialSymIntFun2nTotal[spect,n]) /4
+
+]
+
+DBAxialSymOmegaNMZA[spect_, n_]:=Module[{spectM},
+
+spectM = spect;
+
+{ ( DBAxialSymIntFun0nTotal[spect,n] - DBAxialSymIntFun2nTotal[spect,n] + Sqrt[ (DBAxialSymIntFun0nTotal[spect,n] + DBAxialSymIntFun2nTotal[spect,n] -2 DBAxialSymIntFun1nTotal[spect,n])(DBAxialSymIntFun0nTotal[spect,n] + DBAxialSymIntFun2nTotal[spect,n] + 2 DBAxialSymIntFun1nTotal[spect,n]) ])  / (-4)  ,
+( DBAxialSymIntFun0nTotal[spect,n] - DBAxialSymIntFun2nTotal[spect,n] - Sqrt[ (DBAxialSymIntFun0nTotal[spect,n] + DBAxialSymIntFun2nTotal[spect,n] -2 DBAxialSymIntFun1nTotal[spect,n])(DBAxialSymIntFun0nTotal[spect,n] + DBAxialSymIntFun2nTotal[spect,n] + 2 DBAxialSymIntFun1nTotal[spect,n]) ])  / (-4) 
+ }
+
+]
+
+
+
+
+(* END New Methods to Calculate DR for Discrete Beams which is similar to the continuous code*)
+
+
+
+(* BEGIN Calculate instabilities for discrete beams *)
+
+DBAxialSymOmegaNMAAEqnLHSComplex[omega_,k_,spect_]:=Module[{spectM,nM},
+
+spectM = spect;
+nM=k/omega;
+
+omega - ( DBAxialSymIntFun0nTotal[spect,nM] - DBAxialSymIntFun2nTotal[spect,nM]) /4
+
+]
+
+
+DBAxialSymOmegaNMZApEqnLHSComplex[omega_,k_,spect_]:=Module[{spectM,nM},
+
+spectM = spect;
+
+nM = k/omega ;
+
+omega - ( DBAxialSymIntFun0nTotal[spect,nM] - DBAxialSymIntFun2nTotal[spect,nM] + Sqrt[ (DBAxialSymIntFun0nTotal[spect,nM] + DBAxialSymIntFun2nTotal[spect,nM] -2 DBAxialSymIntFun1nTotal[spect,nM])(DBAxialSymIntFun0nTotal[spect,nM] + DBAxialSymIntFun2nTotal[spect,nM] + 2 DBAxialSymIntFun1nTotal[spect,nM]) ])  / (-4) 
+
+]
+
+DBAxialSymOmegaNMZAmEqnLHSComplex[omega_,k_,spect_]:=Module[{spectM,nM},
+
+spectM = spect;
+
+nM = k/omega ;
+
+omega - ( DBAxialSymIntFun0nTotal[spect,nM] - DBAxialSymIntFun2nTotal[spect,nM] - Sqrt[ (DBAxialSymIntFun0nTotal[spect,nM] + DBAxialSymIntFun2nTotal[spect,nM] -2 DBAxialSymIntFun1nTotal[spect,nM])(DBAxialSymIntFun0nTotal[spect,nM] + DBAxialSymIntFun2nTotal[spect,nM] + 2 DBAxialSymIntFun1nTotal[spect,nM]) ])  / (-4) 
+
+]
+
+
+LSAMAARODataRawDB[spect_,range_:{-4,4,0.01},initk_:0.1*I]:=Module[{},
+Table[
+	{
+		omegareal,k/.FindRoot[
+			DBAxialSymOmegaNMAAEqnLHSComplex[omegareal,k,spect],
+			{k,initk}
+		]
+	},
+	{omegareal,range[[1]],range[[2]],range[[3]]}
+]
+];
+
+
+LSAMZApRODataRawDB[spect_,range_:{-4,4,0.01},initk_:0.1*I]:=Module[{},
+Table[
+	{
+		omegareal,k/.FindRoot[
+			DBAxialSymOmegaNMZApEqnLHSComplex[omegareal,k,spect],
+			{k,initk}
+		]
+	},
+	{omegareal,range[[1]],range[[2]],range[[3]]}
+]
+];
+
+LSAMZAmRODataRawDB[spect_,range_:{-4,4,0.01},initk_:0.1*I]:=Module[{},
+Table[
+	{
+		omegareal,k/.FindRoot[
+			DBAxialSymOmegaNMZAmEqnLHSComplex[omegareal,k,spect],
+			{k,initk}
+		]
+	},
+	{omegareal,range[[1]],range[[2]],range[[3]]}
+]
+];
+
+
+
+LSAMAARODataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
+{#[[1]],Re@#[[2]],Im@#[[2]]}&/@Select[rawdata,
+Abs@DBAxialSymOmegaNMAAEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+]
+
+
+
+LSAMZApRODataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
+{#[[1]],Re@#[[2]],Im@#[[2]]}&/@Select[rawdata,
+Abs@DBAxialSymOmegaNMZApEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+]
+
+LSAMZAmRODataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
+{#[[1]],Re@#[[2]],Im@#[[2]]}&/@Select[rawdata,
+Abs@DBAxialSymOmegaNMZAmEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+]
+
+
+
+
+(* The following is for real k *)
+
+LSAMAARKDataRawDB[spect_,range_:{-4,4,0.01},initomega_:0.1*I]:=Module[{},
+Table[
+	{
+		omega/.FindRoot[
+			DBAxialSymOmegaNMAAEqnLHSComplex[omega,kreal,spect],
+			{omega,initomega}
+		],kreal
+	},
+	{kreal,range[[1]],range[[2]],range[[3]]}
+]
+];
+
+
+
+LSAMAARKDataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
+{Re@#[[1]],#[[2]],Im@#[[1]]}&/@Select[rawdata,
+Abs@DBAxialSymOmegaNMAAEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+]
+
+(* END Calculate instabilities for discrete beams *)
 
 
 (* BEGIN Continuous Useful *)
