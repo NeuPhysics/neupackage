@@ -512,6 +512,86 @@ LSAMZAmRKDataDB[rawdata_,spect_,thresh_:0.01,thresh2_:0.01]:=Module[{},
 ]
 
 
+(* Calculate omega k both complex case *)
+
+LSAMAADataRawDB[spect_,omegarange_:{{-4,4,0.01},{-4,4,0.01}}]:=Module[{kMAAFunM,dataM,baddataM},
+
+kMAAFunM[omega_]:=Last[
+k/.Solve[
+DBAxialSymOmegaNMAAEqnLHSComplex[omega,k,spect]==0,
+k
+]
+];
+
+dataM=Table[
+	{
+		omegareal+omegaimag*I,kMAAFunM[omegareal+omegaimag*I]
+	},
+	{omegareal,omegarange[[1,1]],omegarange[[1,2]],omegarange[[1,3]]},
+	{omegaimag,omegarange[[2,1]],omegarange[[2,2]],omegarange[[2,3]]}
+];
+(*
+baddataM[entry_]:=Not[MatchQ[entry,{_?NumberQ,_?NumberQ}]];
+
+DeleteCases[dataM,_?baddataM]*)
+
+dataM
+
+];
+
+
+LSAMZApDataRawDB[spect_,omegarange_:{{-4,4,0.01},{-4,4,0.01}}]:=Module[{kFunM,dataM,baddataM},
+
+kFunM[omega_]:=Last[
+k/.NSolve[
+DBAxialSymOmegaNMZApEqnLHSComplex[omega,k,spect]==0,
+k
+]
+];
+
+dataM=Table[
+	{
+		omegareal+omegaimag*I,kFunM[omegareal+omegaimag*I]
+	},
+	{omegareal,omegarange[[1,1]],omegarange[[1,2]],omegarange[[1,3]]},
+	{omegaimag,omegarange[[2,1]],omegarange[[2,2]],omegarange[[2,3]]}
+];
+(*
+baddataM[entry_]:=Not[MatchQ[entry,{_?NumberQ,_?NumberQ}]];
+
+DeleteCases[dataM,_?baddataM]*)
+
+dataM
+
+];
+
+LSAMZAmDataRawDB[spect_,omegarange_:{{-4,4,0.01},{-4,4,0.01}}]:=Module[{kFunM,dataM,baddataM},
+
+kFunM[omega_]:=Last[
+k/.NSolve[
+DBAxialSymOmegaNMZAmEqnLHSComplex[omega,k,spect]==0,
+k
+]
+];
+
+dataM=Table[
+	{
+		omegareal+omegaimag*I,kFunM[omegareal+omegaimag*I]
+	},
+	{omegareal,omegarange[[1,1]],omegarange[[1,2]],omegarange[[1,3]]},
+	{omegaimag,omegarange[[2,1]],omegarange[[2,2]],omegarange[[2,3]]}
+];
+(*
+baddataM[entry_]:=Not[MatchQ[entry,{_?NumberQ,_?NumberQ}]];
+
+DeleteCases[dataM,_?baddataM]*)
+
+dataM
+
+];
+
+
+
 (* END Calculate instabilities for discrete beams *)
 
 
