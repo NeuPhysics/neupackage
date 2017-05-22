@@ -407,21 +407,21 @@ Table[
 
 
 
-LSAMAARODataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
+LSAMAARODataDB[rawdata_,spect_,thresh_:0.01,thresh2_:0.01]:=Module[{},
 {#[[1]],Re@#[[2]],Im@#[[2]]}&/@Select[rawdata,
-Abs@DBAxialSymOmegaNMAAEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+Abs@DBAxialSymOmegaNMAAEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&&Im@#[[2]]>thresh2&]
 ]
 
 
 
-LSAMZApRODataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
+LSAMZApRODataDB[rawdata_,spect_,thresh_:0.01,thresh2_:0.01]:=Module[{},
 {#[[1]],Re@#[[2]],Im@#[[2]]}&/@Select[rawdata,
-Abs@DBAxialSymOmegaNMZApEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+Abs@DBAxialSymOmegaNMZApEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&&Im@#[[2]]>thresh2&]
 ]
 
-LSAMZAmRODataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
+LSAMZAmRODataDB[rawdata_,spect_,thresh_:0.01,thresh2_:0.01]:=Module[{},
 {#[[1]],Re@#[[2]],Im@#[[2]]}&/@Select[rawdata,
-Abs@DBAxialSymOmegaNMZAmEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+Abs@DBAxialSymOmegaNMZAmEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&&Im@#[[2]]>thresh2&]
 ]
 
 
@@ -429,24 +429,88 @@ Abs@DBAxialSymOmegaNMZAmEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
 
 (* The following is for real k *)
 
-LSAMAARKDataRawDB[spect_,range_:{-4,4,0.01},initomega_:0.1*I]:=Module[{},
-Table[
-	{
-		omega/.FindRoot[
-			DBAxialSymOmegaNMAAEqnLHSComplex[omega,kreal,spect],
-			{omega,initomega}
-		],kreal
-	},
-	{kreal,range[[1]],range[[2]],range[[3]]}
+LSAMAARKDataRawDB[spect_,range_:{-4,4,0.01},initomega_:0.1*I]:=Module[{omegaMAAFunM,dataM,baddataM},
+
+omegaMAAFunM[k_]:=Last[
+omega/.Solve[
+DBAxialSymOmegaNMAAEqnLHSComplex[omega,k,spect]==0,
+omega
 ]
 ];
 
+dataM=Table[
+	{
+		omegaMAAFunM[kreal],kreal
+	},
+	{kreal,range[[1]],range[[2]],range[[3]]}
+];
 
+baddataM[entry_]:=Not[MatchQ[entry,{_?NumberQ,_?NumberQ}]];
 
-LSAMAARKDataDB[rawdata_,spect_,thresh_:0.01]:=Module[{},
-{Re@#[[1]],#[[2]],Im@#[[1]]}&/@Select[rawdata,
-Abs@DBAxialSymOmegaNMAAEqnLHSComplex[#[[1]],#[[2]],spect]<thresh&]
+DeleteCases[dataM,_?baddataM]
+
+];
+
+LSAMAARKDataDB[rawdata_,spect_,thresh_:0.01,thresh2_:0.01]:=Module[{},
+{Re@#[[1]],#[[2]],Im@#[[1]]}&/@Select[rawdata,Im@#[[1]]>thresh2&]
 ]
+
+
+
+
+LSAMZApRKDataRawDB[spect_,range_:{-4,4,0.01},initomega_:0.1*I]:=Module[{omegaMZApFunM,dataM,baddataM},
+
+omegaMZApFunM[k_]:=Last[
+omega/.NSolve[
+DBAxialSymOmegaNMZApEqnLHSComplex[omega,k,spect]==0,
+omega
+]
+];
+
+dataM=Table[
+	{
+		omegaMZApFunM[kreal],kreal
+	},
+	{kreal,range[[1]],range[[2]],range[[3]]}
+];
+
+baddataM[entry_]:=Not[MatchQ[entry,{_?NumberQ,_?NumberQ}]];
+
+DeleteCases[dataM,_?baddataM]
+
+];
+
+LSAMZApRKDataDB[rawdata_,spect_,thresh_:0.01,thresh2_:0.01]:=Module[{},
+{Re@#[[1]],#[[2]],Im@#[[1]]}&/@Select[rawdata,Abs@Im@#[[1]]>thresh2&]
+]
+
+
+LSAMZAmRKDataRawDB[spect_,range_:{-4,4,0.01},initomega_:0.1*I]:=Module[{omegaMZAmFunM,dataM,baddataM},
+
+omegaMZAmFunM[k_]:=Last[
+omega/.NSolve[
+DBAxialSymOmegaNMZAmEqnLHSComplex[omega,k,spect]==0,
+omega
+]
+];
+
+dataM=Table[
+	{
+		omegaMZAmFunM[kreal],kreal
+	},
+	{kreal,range[[1]],range[[2]],range[[3]]}
+];
+
+baddataM[entry_]:=Not[MatchQ[entry,{_?NumberQ,_?NumberQ}]];
+
+DeleteCases[dataM,_?baddataM]
+
+];
+
+LSAMZAmRKDataDB[rawdata_,spect_,thresh_:0.01,thresh2_:0.01]:=Module[{},
+{Re@#[[1]],#[[2]],Im@#[[1]]}&/@Select[rawdata,Abs@Im@#[[1]]>thresh2&]
+]
+
 
 (* END Calculate instabilities for discrete beams *)
 
