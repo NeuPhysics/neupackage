@@ -598,6 +598,30 @@ dataM
 (* BEGIN Continuous Useful *)
 
 
+IntFun0n::usage = "Calculates the function \!\(\*SubsuperscriptBox[\(\[Integral]\), \(c1\), \(c2\)]\)\!\(\*FractionBox[\(1\), \(1 - n*u\)]\)\[DifferentialD]u=(Log[(1-ct1 n)/(1-ct2 n)])/n; This function doesn't perform the integral. The analytical expression is hard coded in. IntFun0n[n,c1,c2] takes three parameters, n, c1 which is the starting point of the integral, c2 which is the end point of the integral."; 
+IntFun1n::usage = "Calculates the function \!\(\*SubsuperscriptBox[\(\[Integral]\), \(c1\), \(c2\)]\)\!\(\*FractionBox[\(u\), \(1 - n*u\)]\)\[DifferentialD]u = ((ct1-ct2) + Log[(ct1 n-1)/(ct2 n-1)]/n)/n; This function doesn't perform the integral. The analytical expression is hard coded in. IntFun1n[n,c1,c2] takes three parameters, n, c1 which is the starting point of the integral, c2 which is the end point of the integral."; 
+IntFun2n::usage = "Calculates the function \!\(\*SubsuperscriptBox[\(\[Integral]\), \(c1\), \(c2\)]\)\!\(\*FractionBox[\(u^2\), \(1 - n*u\)]\)\[DifferentialD]u = (ct1-ct2) ( (ct1+ct2) n +2 )/(2 n^2)+ Log[(ct1 n-1)/(ct2 n-1)]/n^3; This function doesn't perform the integral. The analytical expression is hard coded in. IntFun2n[n,c1,c2] takes three parameters, n, c1 which is the starting point of the integral, c2 which is the end point of the integral."; 
+IntFun0::usage = "IntFun0[omega_,k_,ct1_,ct2_]:= IntFun0n[k/omega,ct1,ct2]";
+IntFun1::usage = "IntFun1[omega_,k_,ct1_,ct2_]:= IntFun1n[k/omega,ct1,ct2]";
+IntFun2::usage = "IntFun2[omega_,k_,ct1_,ct2_]:= IntFun2n[k/omega,ct1,ct2]";
+IntFun0nABS::usage = " Calculates the function (Log[Abs[(1-ct1 n)/(1-ct2 n)]])/n; It takes three parameters, n, c1 which is the starting point of the integral, c2 which is the end point of the integral.";
+IntFun1nABS::usage = " Calculates the function ((ct1-ct2) + Log[Abs[(ct1 n-1)/(ct2 n-1)]]/n)/n; It takes three parameters, n, c1 which is the starting point of the integral, c2 which is the end point of the integral.";
+IntFun2nABS::usage = " Calculates the function  (ct1-ct2) ( (ct1+ct2) n +2 )/(2 n^2)+ Log[Abs[(ct1 n-1)/(ct2 n-1)]]/n^3; It takes three parameters, n, c1 which is the starting point of the integral, c2 which is the end point of the integral.";
+ConAxialSymOmegaNMAA::usage = " Calculates \[Omega](n) for MAA solution;  ConAxialSymOmegaNMAA[n_,spect_:{{{0.3,0.6},1},{{0.6,0.9},-1}}] takes up to two parameters: n, spect which is the spectrum used in calculation. By convention, spect should have the form { {{\!\(\*SubscriptBox[\(u\), \(1\)]\),\!\(\*SubscriptBox[\(u\), \(1\)]\)'},\!\(\*SubscriptBox[\(g\), \(1\)]\)}, {{\!\(\*SubscriptBox[\(u\), \(2\)]\),\!\(\*SubscriptBox[\(u\), \(2\)]\)'},\!\(\*SubscriptBox[\(g\), \(2\)]\)}, ... } ";
+ConAxialSymOmegaNMAAABS::usage = " Calculates \[Omega](n) for MAA solution, similar to  ConAxialSymOmegaNMAA but with IntFun0nABS, IntFun1nABS, IntFun2nABS.";
+ConAxialSymOmegaNMAAEqnLHS::usage = " Returns the real part and imaginary part of \[Omega] - (\!\(\*SubscriptBox[\(I\), \(0\)]\)-\!\(\*SubscriptBox[\(I\), \(2\)]\))/4 in a list {real part, imaginary part}; ConAxialSymOmegaNMAAEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_,wp_:$MachinePrecision];";
+ConAxialSymOmegaNMAAEqnLHSComplex::usage = " Returns \[Omega] - (\!\(\*SubscriptBox[\(I\), \(0\)]\)-\!\(\*SubscriptBox[\(I\), \(2\)]\))/4; ConAxialSymOmegaNMAAEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_]; This calculation uses the IntFun0n, IntFun2n functions.";
+ConAxialSymOmegaNMAAEqnLHSComplexN::usage = " Returns \[Omega] - (\!\(\*SubscriptBox[\(I\), \(0\)]\)-\!\(\*SubscriptBox[\(I\), \(2\)]\))/4; ConAxialSymOmegaNMAAEqnLHSComplexN[omega_?NumericQ,k_?NumberQ,spect_,wp_:$MachinePrecision]; This calculation uses NIntegral to calculate the integrals directly.";
+ConAxialSymOmegaNMZA::usage = " Returns \[Omega](n) for MZA solutions in a list, {MZA+, MZA-}; ConAxialSymOmegaNMZA[n_,spect_:{{{0.3,0.6},1},{{0.6,0.9},-1}}] ";
+ConAxialSymOmegaNMZASQRT::usage = " Returns the terms unders square root in MZA solutions, (\!\(\*SubscriptBox[\(I\), \(0\)]\)+\!\(\*SubscriptBox[\(I\), \(2\)]\)-2\!\(\*SubscriptBox[\(I\), \(1\)]\))(\!\(\*SubscriptBox[\(I\), \(0\)]\)+\!\(\*SubscriptBox[\(I\), \(2\)]\)+2\!\(\*SubscriptBox[\(I\), \(1\)]\)) ; ConAxialSymOmegaNMZASQRT[n_,spect_:{{{0.3,0.6},1},{{0.6,0.9},-1}}] ";
+ConAxialSymOmegaNMZAABS::usage = " Returns \[Omega](n) for MZA solutions in a list, {MZA+, MZA-}, but with IntFun0nABS,IntFun1nABS,IntFun2nABS; ConAxialSymOmegaNMZA[n_,spect_:{{{0.3,0.6},1},{{0.6,0.9},-1}}] ";
+ConAxialSymOmegaNMZApEqnLHS::usage = " Returns real part and imaginary part of \[Omega] - (\!\(\*SubscriptBox[\(I\), \(0\)]\)-\!\(\*SubscriptBox[\(I\), \(2\)]\)+\!\(\*SqrtBox[\(\((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] - 2 \*SubscriptBox[\(I\), \(1\)])\) \((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] + 2 \*SubscriptBox[\(I\), \(1\)])\)\)]\))/(-4), which is related to MZA+ solution, in a list {real part, imaginary part} ;  ConAxialSymOmegaNMZApEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]";
+ConAxialSymOmegaNMZAmEqnLHS::usage = " Returns real part and imaginary part of  \[Omega] - (\!\(\*SubscriptBox[\(I\), \(0\)]\)-\!\(\*SubscriptBox[\(I\), \(2\)]\)-\!\(\*SqrtBox[\(\((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] - 2 \*SubscriptBox[\(I\), \(1\)])\) \((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] + 2 \*SubscriptBox[\(I\), \(1\)])\)\)]\))/(-4), which is related to MZA- solution, in a list {real part, imaginary part} ;  ConAxialSymOmegaNMZAmEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]";
+ConAxialSymOmegaNMZApEqnLHSComplex::usage = " Returns the value of \[Omega] - (\!\(\*SubscriptBox[\(I\), \(0\)]\)-\!\(\*SubscriptBox[\(I\), \(2\)]\)+\!\(\*SqrtBox[\(\((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] - 2 \*SubscriptBox[\(I\), \(1\)])\) \((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] + 2 \*SubscriptBox[\(I\), \(1\)])\)\)]\))/(-4) as a complex number; ConAxialSymOmegaNMZApEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_]";
+ConAxialSymOmegaNMZAmEqnLHSComplex::usage = " Returns the value of \[Omega] - (\!\(\*SubscriptBox[\(I\), \(0\)]\)-\!\(\*SubscriptBox[\(I\), \(2\)]\)-\!\(\*SqrtBox[\(\((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] - 2 \*SubscriptBox[\(I\), \(1\)])\) \((\*SubscriptBox[\(I\), \(0\)] + \*SubscriptBox[\(I\), \(2\)] + 2 \*SubscriptBox[\(I\), \(1\)])\)\)]\))/(-4) as a complex number; ConAxialSymOmegaNMZAmEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_]";
+
+
+
 IntFun0n[n_,ct1_,ct2_]:= (Log[(1-ct1 n)/(1-ct2 n)])/n;
 IntFun1n[n_,ct1_,ct2_]:= ((ct1-ct2) + Log[(ct1 n-1)/(ct2 n-1)]/n)/n;
 IntFun2n[n_,ct1_,ct2_]:= (ct1-ct2) ( (ct1+ct2) n +2 )/(2 n^2)+ Log[(ct1 n-1)/(ct2 n-1)]/n^3;
@@ -668,7 +692,7 @@ eqnLHSM
 
 ]
 
-ConAxialSymOmegaNMAAEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_,wp_:$MachinePrecision]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+ConAxialSymOmegaNMAAEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
 
 
 spectM=spect;

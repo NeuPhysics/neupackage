@@ -147,7 +147,137 @@
             
   <div class="section" id="dispersion-relation">
 <h1>Dispersion Relation<a class="headerlink" href="#dispersion-relation" title="Permalink to this headline">¶</a></h1>
-<p>The package is located at <cite>mma/dispersion-relation.wl</cite>. The corresponding test notebook is located at <a href="#id1"><span class="problematic" id="id2">``</span></a>.</p>
+<p>The package is located at <cite>mma/dispersion-relation.wl</cite>. The corresponding test notebook is located at <cite>mma/package-test/dispersion-relation-package-test.nb</cite>.</p>
+<p>For a reference of paper about this topic, please read</p>
+<ol class="arabic simple">
+<li>Izaguirre, I., Raffelt, G., &amp; Tamborra, I. (2017). <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.118.021101">Fast Pairwise Conversion of Supernova Neutrinos: A Dispersion Relation Approach</a>. Physical Review Letters, 118(2), 21101.</li>
+</ol>
+<div class="section" id="two-beams">
+<h2>Two Beams<a class="headerlink" href="#two-beams" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="n-beams">
+<h2>N Beams<a class="headerlink" href="#n-beams" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="box-spectra">
+<h2>Box Spectra<a class="headerlink" href="#box-spectra" title="Permalink to this headline">¶</a></h2>
+<p>In the package, a box spectrum is defined as</p>
+<div class="math">
+\[\{ \{ \{ u_1, u_1' \}, g_1  \} ,\{ \{ u_2, u_2' \}, g_2  \}, ,\{ \{ u_3, u_3' \}, g_3  \} , \cdots \},\]</div>
+<p>where <span class="math">\(u_i\)</span> is the start <span class="math">\(\cos\theta_i\)</span> value and <span class="math">\(u_i'\)</span> is the ending value of <span class="math">\(\cos\theta_i\)</span>, within these two values, we have the spectrum value <span class="math">\(g_1\)</span>.</p>
+<p>The functions defined in this section can take in spectrum of arbitrary segments.</p>
+<p>During the calculation of any quantities in this problem, the integral</p>
+<div class="math">
+\[I_m = \int_{c_1}^{c_2} \frac{u^m}{1-n u} \, du\]</div>
+<p>is widely used. These integrals can be calculated analytically.</p>
+<dl class="function">
+<dt>
+<code class="descname">IntFun0n[n,c1,c2]</code></dt>
+<dd><p>Calculates the value of <span class="math">\(I_0\)</span> for given <span class="math">\(n\)</span>, <span class="math">\(c_1\)</span>, and <span class="math">\(c_2\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> &#8211; the variable <span class="math">\(n\)</span></li>
+<li><strong>c1</strong> &#8211; the lower limit of the integral</li>
+<li><strong>c2</strong> &#8211; the upper limit of the integral</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a real or complex number</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descname">IntFun1n[n,c1,c2]</code></dt>
+<dd><p>Calculates the value of <span class="math">\(I_1\)</span> for given <span class="math">\(n\)</span>, <span class="math">\(c_1\)</span>, and <span class="math">\(c_2\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> &#8211; the variable <span class="math">\(n\)</span></li>
+<li><strong>c1</strong> &#8211; the lower limit of the integral</li>
+<li><strong>c2</strong> &#8211; the upper limit of the integral</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a real or complex number</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descname">IntFun2n[n,c1,c2]</code></dt>
+<dd><p>Calculates the value of <span class="math">\(I_2\)</span> for given <span class="math">\(n\)</span>, <span class="math">\(c_1\)</span>, and <span class="math">\(c_2\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> &#8211; the variable <span class="math">\(n\)</span></li>
+<li><strong>c1</strong> &#8211; the lower limit of the integral</li>
+<li><strong>c2</strong> &#8211; the upper limit of the integral</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a real or complex number</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descname">ConAxialSymOmegaNMAA[n,spect_optional]</code></dt>
+<dd><p>Calculates <span class="math">\(\omega(n)\)</span> for MAA solution for given spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> &#8211; the variable <span class="math">\(n\)</span></li>
+<li><strong>spect</strong> &#8211; the input spectrum, which is optional. The default spectrum is {{{0.3,0.6},1},{{0.6,0.9},-1}}</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">real or complex number</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descname">ConAxialSymOmegaNMZA[n,spect_optional]</code></dt>
+<dd><p>Calculates <span class="math">\(\omega(n)\)</span> for MZA solutions for given spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> &#8211; the variable <span class="math">\(n\)</span></li>
+<li><strong>spect</strong> &#8211; the input spectrum, which is optional. The default spectrum is {{{0.3,0.6},1},{{0.6,0.9},-1}}</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a list of real or complex number, {MZA+, MZA-}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 
 
