@@ -707,11 +707,13 @@ IntFun2nFFM=Total[
 
 
 IntFun0nFFM=Total[#[[2]]* IntFun0n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
-IntFun2nFFM=Total[#[[2]]* IntFun2n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+IntFun2nFFM = Total[#[[2]]* IntFun2n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
 
 
-eqnLHSM=omega -(IntFun0nFFM-IntFun2nFFM)/(4);
+eqnLHSM = omega -(IntFun0nFFM-IntFun2nFFM)/(4);
 
+
+(*eqnLHSM = omega -(Total[#[[2]]* IntFun0n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM]-Total[#[[2]]* IntFun2n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM])/(4);*)
 
 eqnLHSM
 
@@ -979,6 +981,43 @@ spectM=spect;
 
 
 IntFun0nFFM = Total[#[[2]] IntFun0n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+IntFun1nFFM = Total[#[[2]] IntFun2n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+IntFun2nFFM = Total[#[[2]] IntFun1n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+
+eqnLHSM=omega-(IntFun0nFFM-IntFun2nFFM - \[Sqrt]((IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM)))/(-4);
+
+
+(* NIntegrate method *)
+(*IntFun0nFFM=Total[
+	NIntegrate[(#[[2]])/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+];
+IntFun1nFFM=Total[
+	NIntegrate[(#[[2]]u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+];
+IntFun2nFFM=Total[
+	NIntegrate[(#[[2]]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+];
+
+
+eqnLHSM=omegaR+I omegaI-(IntFun0nFFM-IntFun2nFFM+\[Sqrt]((IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM)))/(-4);
+*)
+
+
+
+eqnLHSM
+
+
+
+]
+
+
+ConAxialSymOmegaNMZAmEqnLHSComplexABS[omega_?NumericQ,k_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+
+IntFun0nFFM = Total[#[[2]] IntFun0nABS[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
 IntFun1nFFM = Total[#[[2]] IntFun2n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
 IntFun2nFFM = Total[#[[2]] IntFun1n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
 
