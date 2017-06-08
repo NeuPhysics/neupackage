@@ -1054,7 +1054,7 @@ eqnLHSM
 (* BEGIN Continuous Feed in Function as spectrum *)
 
 (* Define the integral functions to be used in dispersion relation *)
-IntFun0nFSpect[n_,ct1_,ct2_,spectrumFun_]:= NIntegrate[(spectrumFun@u)/(1-n u),{u,ct1,ct2},Exclusions->{1/n}];
+IntFun0nFSpect[n_,ct1_,ct2_,spectrumFun_]:= NIntegrate[(spectrumFun@u)/(1-n u),{u,ct1,ct2},Exclusions->{1/n}(*,Method\[Rule]"PrincipalValue"*)];
 IntFun1nFSpect[n_,ct1_,ct2_,spectrumFun_]:= NIntegrate[(spectrumFun@u)u/(1-n u),{u,ct1,ct2},Exclusions->{1/n}];
 IntFun2nFSpect[n_,ct1_,ct2_,spectrumFun_]:= NIntegrate[(spectrumFun@u)u^2/(1-n u),{u,ct1,ct2},Exclusions->{1/n}];
 
