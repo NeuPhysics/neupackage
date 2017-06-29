@@ -891,6 +891,44 @@ eqnLHSM
 
 
 
+ConAxialSymOmegaNMZAEqnLHSComplex[omega_?NumericQ,k_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+
+IntFun0nFFM = Total[#[[2]] IntFun0n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+IntFun1nFFM = Total[#[[2]] IntFun2n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+IntFun2nFFM = Total[#[[2]] IntFun1n[k/omega,#[[1,1]],#[[1,2]]]&/@spectM];
+
+eqnLHSM= (4omega+(IntFun0nFFM-IntFun2nFFM))^2 - (IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM);
+
+
+(* NIntegrate method *)
+(*IntFun0nFFM=Total[
+	NIntegrate[(#[[2]])/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+];
+IntFun1nFFM=Total[
+	NIntegrate[(#[[2]]u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+];
+IntFun2nFFM=Total[
+	NIntegrate[(#[[2]]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,#[[1,1]],#[[1,2]]}]&/@spectM
+];
+
+
+eqnLHSM=omegaR+I omegaI-(IntFun0nFFM-IntFun2nFFM+\[Sqrt]((IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM)))/(-4);
+*)
+
+
+
+eqnLHSM
+
+
+
+]
+
+
+
 ConAxialSymOmegaNMZApEqnLHSComplexN[omega_?NumericQ,k_?NumberQ,spect_,wp_:$MachinePrecision]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
 
 
@@ -1076,6 +1114,32 @@ IntFun2nFFM=NIntegrate[(spectM[u]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}
 
 
 eqnLHSM[omega_,k_]:=omega-(IntFun0nFFM-IntFun2nFFM)/(4);
+
+
+{ComplexExpand[Re[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]],
+ComplexExpand[Im[
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+]]
+}
+
+
+]
+
+
+SpectrumOmegaKMZAEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+IntFun0nFFM=NIntegrate[(spectM@u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun1nFFM=NIntegrate[(spectM@u)u/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun2nFFM=NIntegrate[(spectM[u]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+
+
+eqnLHSM[omega_,k_]:= (4 omega+(IntFun0nFFM-IntFun2nFFM) )^2-(IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM);
+
 
 
 {ComplexExpand[Re[
