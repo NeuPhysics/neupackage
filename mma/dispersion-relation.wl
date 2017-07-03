@@ -1128,6 +1128,23 @@ eqnLHSM[omegaR+I omegaI,kR+I kI]
 ]
 
 
+SpectrumOmegaKMAAEqnLHSComplex[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+IntFun0nFFM=NIntegrate[(spectM@u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun2nFFM=NIntegrate[(spectM[u]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+
+
+eqnLHSM[omega_,k_]:=omega-(IntFun0nFFM-IntFun2nFFM)/(4);
+
+
+eqnLHSM[omegaR+I omegaI,kR+I kI]
+
+]
+
+
 SpectrumOmegaKMZAEqnLHS[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
 
 
@@ -1150,6 +1167,27 @@ eqnLHSM[omegaR+I omegaI,kR+I kI]
 ]]
 }
 
+
+]
+
+
+
+SpectrumOmegaKMZAEqnLHSComplex[omegaR_?NumberQ,omegaI_?NumericQ,kR_?NumberQ,kI_?NumberQ,spect_]:=Module[{eqnLHSM,spectM,IntFun0nFFM,IntFun1nFFM,IntFun2nFFM},
+
+
+spectM=spect;
+
+IntFun0nFFM=NIntegrate[(spectM@u)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun1nFFM=NIntegrate[(spectM@u)u/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+IntFun2nFFM=NIntegrate[(spectM[u]u^2)/(1-(kR+I*kI) u/(omegaR+I*omegaI)),{u,-1,1}];
+
+
+eqnLHSM[omega_,k_]:= (4 omega+(IntFun0nFFM-IntFun2nFFM) )^2-(IntFun0nFFM+IntFun2nFFM-2IntFun1nFFM)(IntFun0nFFM+IntFun2nFFM+2IntFun1nFFM);
+
+
+
+
+eqnLHSM[omegaR+I omegaI,kR+I kI]
 
 ]
 
