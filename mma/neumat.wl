@@ -75,7 +75,7 @@ phiNListM=phiNList;
 length=Length@listInputM;
 endpointM=endpoint;
 initM={psi1[0],psi2[0]}=={1,0};
-maxstepsM=10000000;
+maxstepsM=1000000000;
 
 
 hamilM=Total@Table[hNList[listInputM[[i]],kNListM,aNListM,phiNListM,thetamM,x],{i,1,length}];
@@ -85,7 +85,7 @@ NDSolve[I D[{psi1[x],psi2[x]},x]==hamilM.{psi1[x],psi2[x]}&&initM,{psi1,psi2},{x
 ]
 (*solNList END*)
 
-pltNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,legends_,color_,frameTicks_,frameLabel_,startpoint_:0]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNList[listInput,kNList,aNList,phiNList,thetam,endpoint]],{x,startpoint,endpoint},ImageSize->imgsizeNeuMat,Frame->True,FrameLabel->{{"Transition Probability",None},{"\!\(\*OverscriptBox[\(x\), \(^\)]\)",frameLabel}},PlotStyle->color,PlotLegends->Placed[LineLegend[color,ToString[legends]],{Center,Above}],FrameTicks->{{Automatic,None},{Automatic,frameTicks}},PlotPoints->endpoint,LabelStyle->Black,FrameTicksStyle->Larger,BaseStyle->{(*FontWeight\[Rule]"Bold",*)FontFamily->"Arial",FontSize->15}]
+pltNList[listInput_,kNList_,aNList_,phiNList_,thetam_,endpoint_,legends_,color_,frameTicks_,frameLabel_,startpoint_:0]:=Plot[Evaluate[Abs[psi2[x]]^2/.solNList[listInput,kNList,aNList,phiNList,thetam,endpoint]],{x,startpoint,endpoint},ImageSize->imgsizeNeuMat,Frame->True,FrameLabel->{{"Transition Probability",None},{"\!\(\*OverscriptBox[\(x\), \(^\)]\)",frameLabel}},PlotStyle->color,PlotLegends->Placed[LineLegend[color,ToString[legends]],{Center,Above}],FrameTicks->{{Automatic,None},{Automatic,frameTicks}}(*,PlotPoints->endpoint*),LabelStyle->Black,FrameTicksStyle->Larger,BaseStyle->{(*FontWeight\[Rule]"Bold",*)FontFamily->"Arial",FontSize->15}]
 
 
 (*hamiltonianNum BEGIN*)
